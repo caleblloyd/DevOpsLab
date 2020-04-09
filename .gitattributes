@@ -1,0 +1,14 @@
+# use lf for text files
+* text=auto eol=lf
+
+# binary files
+*.eot binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.otf binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+

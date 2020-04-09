@@ -1,0 +1,48 @@
+version: "3.7"
+
+volumes:
+  bin-cache:
+  obj-cache:
+  nuget-cache:
+  pgadmin:
+
+services:
+
+  db:
+    image: postgres:10.4-alpine
+    container_name: dol-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "16308:5432"
+
+  pgadmin:
+    image: thajeztah/pgadmin4:3.0
+    container_name: dol-pgadmin
+    ports:
+      - "16309:5050"
+    volumes:
+     - pgadmin:/pgadmin
+    depends_on:
+      - db
+
+  dotnet:
+    image: dol-dotnet:latest
+    build: ./cicd/docker/dev/dotnet
+    container_name: dol-dotnet
+    environment:
+      ASPNETCORE_ENVIRONMENT: DockerCompose
+      DOTNET_USE_POLLING_FILE_WATCHER: "${DOTNET_USE_POLLING_FILE_WATCHER:-1}"
+    init: true
+    ports:
+      - "16300:5000"
+    volumes:
+      - /DevOpsLab.sln:/dotnet/DevOpsLab.sln
+      - ./.config:/dotnet/.config
+      - ./src:/dotnet/src
+      - bin-cache:/dotnet/.bin
+      - obj-cache:/dotnet/.obj
+      - nuget-cache:/home/docker/.nuget
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    depends_on:
+      - db

@@ -1,0 +1,8 @@
+version: "3.4"
+
+services:
+  dotnet:
+    build:
+      context: ../../../
+      dockerfile: cicd/docker/sdk/dotnet//Dockerfile
+    image: boxops/dashboard-sdk:${GIT_COMMIT_SHORT_HASH:-dev}

@@ -1,0 +1,10 @@
+version: "3.4"
+
+services:
+  dotnet:
+    build:
+      context: '.'
+      dockerfile: dotnet/Dockerfile
+      args:
+        GIT_COMMIT_SHORT_HASH: ${GIT_COMMIT_SHORT_HASH:-dev}
+    image: boxops/dashboard:${GIT_COMMIT_SHORT_HASH:-dev}

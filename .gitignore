@@ -1,0 +1,22 @@
+# .NET Core
+.vs
+.bin
+bin
+.obj
+obj
+*.DotSettings.user
+
+# Rider
+.idea
+
+# VSCode
+.vscode
+
+# docker-compose
+/.env
+
+# node
+node_modules
+
+# app
+appsettings.Local.json

@@ -1,0 +1,7 @@
+user: docker
+group: docker
+paths:
+- /
+- /dotnet/src/BoxOps.Dashboard/bin
+- /dotnet/src/BoxOps.Dashboard/obj
+- /home/docker/.nuget

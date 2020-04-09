@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>..\..\.bin\Shared</BaseOutputPath>
+    <BaseIntermediateOutputPath>..\..\.obj\Shared</BaseIntermediateOutputPath>
+ </PropertyGroup>
+</Project>

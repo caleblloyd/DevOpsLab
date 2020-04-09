@@ -1,0 +1,10 @@
+using System;
+using Microsoft.AspNetCore.Components;
+
+namespace DevOpsLab.Server.Helpers.Uri
+{
+    public static class NavigationManagerHelper
+    {
+        public static UriBuilder UriBuilder(this NavigationManager nm) => new UriBuilder(nm.Uri);
+    }
+}
