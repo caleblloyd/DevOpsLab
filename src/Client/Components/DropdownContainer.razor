@@ -1,0 +1,71 @@
+﻿@inject IJSRuntime JsRuntime
+
+@using System.Globalization
+@implements IDisposable
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private bool _dropdownOpen;
+
+    private readonly DotNetObjectReference<DropdownContainer> _objRef;
+
+    public string DropdownOpenClass => _dropdownOpen ? "open" : "";
+
+    public readonly string Id = Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture);
+
+    private string Selector => $"#{Id}";
+
+    public DropdownContainer()
+    {
+        _objRef = DotNetObjectReference.Create(this);
+    }
+
+    public async Task DropdownToggle()
+    {
+        _dropdownOpen = !_dropdownOpen;
+        if (_dropdownOpen)
+        {
+            await JsRuntime.InvokeVoidAsync(
+                "helpers.clickedOutsideAddListener",
+                _objRef,
+                nameof(DropdownClickedOff),
+                Selector);
+        }
+        else
+        {
+            await DropdownClose();
+        }
+    }
+
+    private async Task DropdownClose()
+    {
+        await JsRuntime.InvokeVoidAsync("helpers.clickedOutsideRemoveListener", Selector);
+    }
+
+    [JSInvokable]
+    public async Task DropdownClickedOff()
+    {
+        _dropdownOpen = false;
+        await DropdownClose();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_objRef != null)
+        {
+#pragma warning disable 4014
+            DropdownClose();
+#pragma warning restore 4014
+            _objRef.Dispose();
+        }
+    }
+
+}

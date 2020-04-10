@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh -e
 
-cd $(dirname $0)
-cd ../../
+cd "$(dirname $0)/../../"
 
-cloc --exclude-dir=node_modules,vendor,bin,obj,Migrations --not-match-d="^\..*\$" --force-lang=Razor,razor .
-
+cloc \
+    --exclude-dir=.bin,.obj,node_modules,vendor,wwwroot,Migrations \
+    --not-match-d="^\..*\$" --force-lang=Razor,razor .
