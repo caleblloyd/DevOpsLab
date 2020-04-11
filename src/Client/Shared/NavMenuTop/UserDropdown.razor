@@ -1,0 +1,14 @@
+﻿@using DevOpsLab.Client.Components
+
+@{ DropdownContainer dropdownContainer = null; }
+<DropdownContainer @ref="dropdownContainer">
+    <div id="@dropdownContainer.Id" class="dropdown bottom-right @dropdownContainer.DropdownOpenClass">
+        <button class="nav-icon dropdown-toggle" @onclick="dropdownContainer.DropdownToggle">
+            <clr-icon shape="user"></clr-icon>
+            <clr-icon shape="caret down"></clr-icon>
+        </button>
+        <div class="dropdown-menu">
+            <UserDropdownItems/>
+        </div>
+    </div>
+</DropdownContainer>

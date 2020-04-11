@@ -1,6 +1,11 @@
 using System.Threading.Tasks;
+using DevOpsLab.Client.Services;
+using DevOpsLab.Shared;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace DevOpsLab.Client
 {
@@ -12,7 +17,12 @@ namespace DevOpsLab.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddBaseAddressHttpClient();
+            builder.Services.AddAuthorizationCore(options => options.AddAppPolicies());
             builder.Services.AddApiAuthorization();
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<
+                    IPostConfigureOptions<RemoteAuthenticationOptions<ApiAuthorizationProviderOptions>>,
+                    ApiAuthorizationOptionsConfiguration>());
 
             await builder.Build().RunAsync();
         }

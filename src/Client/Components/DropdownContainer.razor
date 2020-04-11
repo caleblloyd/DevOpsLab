@@ -12,11 +12,11 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    private bool _dropdownOpen;
+    private bool _isOpen;
 
     private readonly DotNetObjectReference<DropdownContainer> _objRef;
 
-    public string DropdownOpenClass => _dropdownOpen ? "open" : "";
+    public string DropdownOpenClass => _isOpen ? "open" : "";
 
     public readonly string Id = Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture);
 
@@ -27,32 +27,34 @@
         _objRef = DotNetObjectReference.Create(this);
     }
 
-    public async Task DropdownToggle()
+    public Task DropdownToggle() => _isOpen ? DropdownClose() : DropdownOpen();
+
+    public async Task DropdownOpen()
     {
-        _dropdownOpen = !_dropdownOpen;
-        if (_dropdownOpen)
+        if (!_isOpen)
         {
-            await JsRuntime.InvokeVoidAsync(
-                "helpers.clickedOutsideAddListener",
+            await JsRuntime.InvokeVoidAsync("helpers.clickedOutsideAddListener",
                 _objRef,
                 nameof(DropdownClickedOff),
                 Selector);
-        }
-        else
-        {
-            await DropdownClose();
+            _isOpen = true;
         }
     }
 
-    private async Task DropdownClose()
+    public async Task DropdownClose()
     {
-        await JsRuntime.InvokeVoidAsync("helpers.clickedOutsideRemoveListener", Selector);
+        if (_isOpen)
+        {
+            await JsRuntime.InvokeVoidAsync(
+                "helpers.clickedOutsideRemoveListener",
+                Selector);
+            _isOpen = false;
+        }
     }
 
     [JSInvokable]
     public async Task DropdownClickedOff()
     {
-        _dropdownOpen = false;
         await DropdownClose();
         StateHasChanged();
     }

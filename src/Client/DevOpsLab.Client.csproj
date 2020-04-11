@@ -16,10 +16,25 @@
     <ProjectReference Include="..\Shared\DevOpsLab.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Shared\NavMenuTop.razor">
+    <Content Update="Components\DropdownContainer.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
-    <Content Update="Components\DropdownContainer.razor">
+    <Content Update="Shared\NavMenuTop\NavMenuTop.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Shared\NavMenuTop\UserDropdownItems.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Shared\NavMenuTop\UserDropdown.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Shared\NavMenuTop\TrainingCodeDropdown.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Shared\NavMenuTop\Links.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Claims.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

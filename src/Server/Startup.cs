@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DevOpsLab.Server.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -40,18 +41,17 @@ namespace DevOpsLab.Server
                 .AddEntityFrameworkStores<AppDb>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<AppUser, AppDb>();
+                .AddApiAuthorization<AppUser, AppDb>(options =>
+                {
+                    // https://github.com/dotnet/AspNetCore.Docs/issues/17649
+                    options.IdentityResources["openid"].UserClaims.Add("role");
+                    options.ApiResources.Single().UserClaims.Add("role");
+                });
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(PolicyTypes.RequireAdmin, policy =>
-                    policy.RequireRole(RoleTypes.Admin));
-                options.AddPolicy(PolicyTypes.RequireInstructor, policy =>
-                    policy.RequireRole(RoleTypes.Admin, RoleTypes.Instructor));
-            });
+            services.AddAuthorization(options => options.AddAppPolicies());
 
             services.AddControllersWithViews();
             services.AddHealthChecks();

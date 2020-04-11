@@ -59,11 +59,10 @@ namespace DevOpsLab.Server
 
             if (args.Length == 0)
             {
-                using var scope = host.Services.CreateScope();
-                
                 if (AppEnv.IsLocalDevelopment)
                 {
                     // local development - clear out membership table on restart
+                    using var scope = host.Services.CreateScope();
                     using var db = scope.ServiceProvider.GetService<AppDb>();
                     db.Database.ExecuteSqlRaw("DELETE FROM OrleansMembershipTable");
                 }

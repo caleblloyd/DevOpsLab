@@ -5,6 +5,7 @@ using DevOpsLab.Server.Config;
 using DevOpsLab.Server.Db;
 using DevOpsLab.Server.Grains.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 
@@ -13,17 +14,17 @@ namespace DevOpsLab.Server.Services
     public class HostedService : IHostedService
     {
         private readonly IHostApplicationLifetime _appLifetime;
-        private readonly AppDb _db;
         private readonly IGrainFactory _grainFactory;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public HostedService(
             IHostApplicationLifetime appLifetime,
-            AppDb db,
+            IServiceScopeFactory serviceScopeFactory,
             IGrainFactory grainFactory)
         {
-            _db = db;
             _appLifetime = appLifetime;
             _grainFactory = grainFactory;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -31,7 +32,9 @@ namespace DevOpsLab.Server.Services
             if (AppEnv.IsLocalDevelopment)
             {
                 // local development - clear out membership table on restart
-                await _db.Database.ExecuteSqlRawAsync("DELETE FROM OrleansMembershipTable", cancellationToken);
+                using var scope = _serviceScopeFactory.CreateScope();
+                var db = scope.ServiceProvider.GetService<AppDb>();
+                await db.Database.ExecuteSqlRawAsync("DELETE FROM OrleansMembershipTable", cancellationToken);
             }
 
             _appLifetime.ApplicationStarted.Register(async () =>
