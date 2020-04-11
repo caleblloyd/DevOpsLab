@@ -1,0 +1,11 @@
+﻿@page "/instruct"
+@using DevOpsLab.Shared
+@using DevOpsLab.Client.Services.Hub
+
+@inject InstructHubClient InstructHubClient
+
+<AuthorizeView Policy="@PolicyTypes.RequireInstructor">
+    <Authorized>
+        <h1>Instruct</h1>
+    </Authorized>
+</AuthorizeView>

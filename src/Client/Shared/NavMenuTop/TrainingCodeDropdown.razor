@@ -3,22 +3,18 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using DevOpsLab.Client.Components
 
-<AuthorizeView>
-    <Authorized>
-        @{ DropdownContainer dropdownContainer = null; }
-        <DropdownContainer @ref="dropdownContainer">
-            <div id="@dropdownContainer.Id" class="dropdown bottom-right @dropdownContainer.DropdownOpenClass">
-                <button class="dropdown-toggle nav-btn" @onclick="dropdownContainer.DropdownToggle">
-                    Training Codes
-                    <clr-icon shape="caret down"></clr-icon>
-                </button>
-                <div class="dropdown-menu">
-                    <button class="dropdown-item">Training Code 1</button>
-                    <button class="dropdown-item">Training Code 2</button>
-                    <div class="dropdown-divider" role="separator"></div>
-                    <button class="dropdown-item">Add Training Code</button>
-                </div>
-            </div>
-        </DropdownContainer>
-    </Authorized>
-</AuthorizeView>
+@{ DropdownContainer dropdownContainer = null; }
+<DropdownContainer @ref="dropdownContainer">
+    <div id="@dropdownContainer.Id" class="dropdown bottom-right @dropdownContainer.DropdownOpenClass">
+        <button class="dropdown-toggle nav-btn" @onclick="dropdownContainer.DropdownToggle">
+            Training Codes
+            <clr-icon shape="caret down"></clr-icon>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item">Training Code 1</button>
+            <button class="dropdown-item">Training Code 2</button>
+            <div class="dropdown-divider" role="separator"></div>
+            <button class="dropdown-item">Add Training Code</button>
+        </div>
+    </div>
+</DropdownContainer>

@@ -1,5 +1,7 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading.Tasks;
 using DevOpsLab.Server.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -10,10 +12,16 @@ using Microsoft.Extensions.Hosting;
 using DevOpsLab.Server.Db;
 using DevOpsLab.Server.Grains;
 using DevOpsLab.Server.Helpers.Services;
+using DevOpsLab.Server.Hubs;
 using DevOpsLab.Server.Services;
 using DevOpsLab.Shared.Models;
 using DevOpsLab.Shared;
+using IdentityServer4.Models;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -47,13 +55,18 @@ namespace DevOpsLab.Server
                     options.IdentityResources["openid"].UserClaims.Add("role");
                     options.ApiResources.Single().UserClaims.Add("role");
                 });
+            // Need to do this as it maps "role" to ClaimTypes.Role and causes issues
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>());
 
             services.AddAuthorization(options => options.AddAppPolicies());
 
             services.AddControllersWithViews();
+            services.AddSignalR();
             services.AddHealthChecks();
             services.AddRazorPages();
 
@@ -79,12 +92,15 @@ namespace DevOpsLab.Server
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
-            app.UseIdentityServer();
             app.UseAuthorization();
+            app.UseIdentityServer();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<AdminHub>("/hubs/admin");
+                endpoints.MapHub<InstructHub>("/hubs/instruct");
+                endpoints.MapHub<TrainHub>("/hubs/train");
                 endpoints.MapFallbackToFile("index.html");
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapRazorPages();

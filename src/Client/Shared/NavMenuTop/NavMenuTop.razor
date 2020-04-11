@@ -4,10 +4,14 @@
     </div>
     <div class="divider"></div>
     <div class="header-nav">
-        <Links />
+        <Links/>
     </div>
     <div class="header-actions">
-        <TrainingCodeDropdown/>
+        <AuthorizeView>
+            <Authorized>
+                <TrainingCodeDropdown/>
+            </Authorized>
+        </AuthorizeView>
         <UserDropdown/>
     </div>
     @* <LoginDisplay/> *@
