@@ -1,14 +1,41 @@
 ﻿@using DevOpsLab.Client.Components
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
-@{ DropdownContainer dropdownContainer = null; }
-<DropdownContainer @ref="dropdownContainer">
-    <div id="@dropdownContainer.Id" class="dropdown bottom-right @dropdownContainer.DropdownOpenClass">
-        <button class="nav-icon dropdown-toggle" @onclick="dropdownContainer.DropdownToggle">
+@inject NavigationManager NavigationManager
+@inject SignOutSessionStateManager SignOutManager
+
+<DropdownContainer @ref="_dropdownContainer">
+    <div id="@_dropdownContainer.Id" class="dropdown bottom-right @_dropdownContainer.DropdownOpenClass">
+        <button class="nav-icon dropdown-toggle" @onclick="_dropdownContainer.DropdownToggle">
             <clr-icon shape="user"></clr-icon>
             <clr-icon shape="caret down"></clr-icon>
         </button>
         <div class="dropdown-menu">
-            <UserDropdownItems/>
+            <AuthorizeView>
+                <Authorized>
+                    <h4 class="dropdown-header">Hello, @context.User.Identity.Name!</h4>
+                    <a class="dropdown-item" href="authentication/profile">Profile</a>
+                    <a class="dropdown-item" href="javascript://" @onclick="BeginSignOut">Log out</a>
+                </Authorized>
+                <NotAuthorized>
+                    <h4 class="dropdown-header">Not Logged In</h4>
+                    <a class="dropdown-item" href="authentication/login">Log in</a>
+                    <a class="dropdown-item" href="authentication/register">Register</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </div>
 </DropdownContainer>
+
+@code {
+
+    private DropdownContainer _dropdownContainer;
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        NavigationManager.NavigateTo("authentication/logout");
+        await _dropdownContainer.DropdownClose();
+    }
+
+}

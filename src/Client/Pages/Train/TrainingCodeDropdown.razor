@@ -1,6 +1,5 @@
 ﻿@using DevOpsLab.Client.Components
 @using DevOpsLab.Client.Helpers
-@using DevOpsLab.Client.Pages.Train
 
 @inherits TrainBase
 @implements IDisposable
@@ -26,10 +25,10 @@
 
 @code {
     
-    Tuple<bool> _locationState;
+    private Tuple<bool> _locationState;
 
-    private bool Visible => NavigationManager.UriBuilder().IsTrainPath()
-                            || NavigationManager.UriBuilder().IsInstructPath();
+    private bool Visible => NavigationManager.PathActive(PathHelper.TrainPath)
+                            || NavigationManager.PathActive(PathHelper.InstructPath);
 
     protected override void OnInitialized()
     {

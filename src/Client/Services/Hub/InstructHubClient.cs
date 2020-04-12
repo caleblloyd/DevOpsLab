@@ -16,7 +16,7 @@ namespace DevOpsLab.Client.Services.Hub
 
         protected override string Endpoint { get; set; } = "/hubs/instruct";
 
-        protected override bool ShouldConnect(UriBuilder uriBuilder) =>
-            uriBuilder.IsInstructPath();
+        protected override bool ShouldConnect =>
+            NavigationManager.PathActive(PathHelper.InstructPath);
     }
 }

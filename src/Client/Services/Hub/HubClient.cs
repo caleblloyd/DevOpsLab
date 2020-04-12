@@ -12,7 +12,7 @@ namespace DevOpsLab.Client.Services.Hub
     public abstract class HubClient
     {
         protected HubConnection HubConnection;
-        private readonly NavigationManager _navigationManager;
+        protected readonly NavigationManager NavigationManager;
 
         // workaround https://github.com/dotnet/aspnetcore/pull/20466
         private readonly IAccessTokenProvider _accessTokenProvider;
@@ -30,8 +30,8 @@ namespace DevOpsLab.Client.Services.Hub
         {
             // workaround https://github.com/dotnet/aspnetcore/pull/20466
             _accessTokenProvider = accessTokenProvider;
-            _navigationManager = navigationManager;
             // end workaround
+            NavigationManager = navigationManager;
             HubConnection = new HubConnectionBuilder()
                 // ReSharper disable once VirtualMemberCallInConstructor
                 .WithUrl(navigationManager.ToAbsoluteUri(Endpoint), options =>
@@ -52,18 +52,15 @@ namespace DevOpsLab.Client.Services.Hub
                 })
                 .WithAutomaticReconnect()
                 .Build();
-            Task.Run(() => LocationChanged(navigationManager.UriBuilder()));
-            navigationManager.LocationChanged += (sender, args) =>
-            {
-                Task.Run(() => LocationChanged(args.UriBuilder()));
-            };
+            Task.Run(LocationChanged);
+            navigationManager.LocationChanged += (sender, args) => { Task.Run(LocationChanged); };
         }
 
         protected abstract string Endpoint { get; set; }
 
-        protected abstract bool ShouldConnect(UriBuilder uriBuilder);
+        protected abstract bool ShouldConnect { get; }
 
-        private async Task LocationChanged(UriBuilder uriBuilder)
+        private async Task LocationChanged()
         {
             // workaround https://github.com/dotnet/aspnetcore/pull/20466
             if (_hubConnectionWorkaround == null)
@@ -82,12 +79,12 @@ namespace DevOpsLab.Client.Services.Hub
                         }
                         else
                         {
-                            _navigationManager.NavigateTo(tokenResult.RedirectUrl);
+                            NavigationManager.NavigateTo(tokenResult.RedirectUrl);
                             return;
                         }
 
                         var accessTokenEncoded = UrlEncoder.Default.Encode(tokenValue);
-                        var url = _navigationManager.ToAbsoluteUri(Endpoint) + "?access_token=" + accessTokenEncoded;
+                        var url = NavigationManager.ToAbsoluteUri(Endpoint) + "?access_token=" + accessTokenEncoded;
                         _hubConnectionWorkaround = new HubConnectionBuilder()
                             // ReSharper disable once VirtualMemberCallInConstructor
                             .WithUrl(url,
@@ -107,7 +104,7 @@ namespace DevOpsLab.Client.Services.Hub
             // set latest value of _shouldConnect
             lock (_shouldConnectLock)
             {
-                _shouldConnect = ShouldConnect(uriBuilder);
+                _shouldConnect = ShouldConnect;
             }
 
             // acquire semaphore

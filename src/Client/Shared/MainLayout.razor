@@ -1,6 +1,7 @@
-﻿@using DevOpsLab.Client.Shared.NavMenuTop
+﻿@using DevOpsLab.Client.Pages.Admin
+@using DevOpsLab.Client.Shared.NavMenuTop
 @using DevOpsLab.Client.Helpers
-@using DevOpsLab.Client.Pages.Admin
+@using DevOpsLab.Shared
 
 @inherits LayoutComponentBase
 
@@ -14,6 +15,14 @@
         @if (SideNavVisible)
         {
             <nav class="sidenav">
+                @if (AdminVisible)
+                {
+                    <AuthorizeView Policy="@PolicyTypes.RequireAdmin">
+                        <Authorized>
+                            <AdminSidebar/>
+                        </Authorized>
+                    </AuthorizeView>
+                }
             </nav>
         }
         <div class="content-area">
@@ -23,11 +32,11 @@
 </div>
 
 @code {
-    Tuple<bool, bool> _locationState;
+    private Tuple<bool, bool> _locationState;
 
-    private bool SideNavVisible => NavigationManager.UriBuilder().IsAdminPath();
+    private bool SideNavVisible => AdminVisible;
 
-    private bool AdminVisible => NavigationManager.UriBuilder().IsAdminPath();
+    private bool AdminVisible => NavigationManager.PathActive(PathHelper.AdminPath);
 
     protected override void OnInitialized()
     {

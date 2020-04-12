@@ -1,0 +1,87 @@
+@using DevOpsLab.Client.Helpers
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
+
+<section class="sidenav-content">
+    <section class="nav-group">
+        <input id="label-content" type="checkbox">
+        <label for="label-content">Content</label>
+        <ul class="nav-list">
+            <li>
+                <a href="@CoursesPath" class="nav-link @CoursesActiveClass">Courses</a>
+                <a href="@TracksPath" class="nav-link @TracksActiveClass">Tracks</a>
+            </li>
+        </ul>
+    </section>
+    <section class="nav-group">
+        <input id="label-events" type="checkbox">
+        <label for="label-events">Events</label>
+        <ul class="nav-list">
+            <li>
+                <a href="@TrainingCodesPath" class="nav-link @TrainingCodesActiveClass">Training Codes</a>
+            </li>
+        </ul>
+    </section>
+    <section class="nav-group">
+        <input id="label-users" type="checkbox">
+        <label for="label-users">Users</label>
+        <ul class="nav-list">
+            <li>
+                <a href="@UsersPath" class="nav-link @UsersActiveClass">Users</a>
+            </li>
+        </ul>
+    </section>
+</section>
+
+@code {
+        private const string CoursesPath = "admin/courses";
+        private const string TracksPath = "admin/tracks";
+        private const string TrainingCodesPath = "admin/training-codes";
+        private const string UsersPath = "admin/users";
+
+    private Tuple<string, string, string, string> _locationState;
+
+    private string CoursesActiveClass =>
+        NavigationManager.PathActiveClass(CoursesPath);
+
+    private string TracksActiveClass =>
+        NavigationManager.PathActiveClass(TracksPath);
+
+    private string TrainingCodesActiveClass =>
+        NavigationManager.PathActiveClass(TrainingCodesPath);
+
+    private string UsersActiveClass =>
+        NavigationManager.PathActiveClass(UsersPath);
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += LocationChanged;
+        LocationChangedInternal();
+    }
+
+    private void LocationChanged(object sender, LocationChangedEventArgs locationChanged)
+    {
+        LocationChangedInternal();
+    }
+
+    private void LocationChangedInternal()
+    {
+        var locationState = new Tuple<string, string, string, string>(
+            CoursesActiveClass,
+            TracksActiveClass,
+            TrainingCodesActiveClass,
+            UsersActiveClass);
+        if (_locationState == null || !locationState.Equals(_locationState))
+        {
+            StateHasChanged();
+        }
+        _locationState = locationState;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+}
