@@ -1,11 +1,5 @@
 ﻿@page "/admin"
-@using DevOpsLab.Shared
-@using DevOpsLab.Client.Services.Hub
 
-@inject AdminHubClient AdminHubClient
+@inherits AdminBase
 
-<AuthorizeView Policy="@PolicyTypes.RequireAdmin">
-    <Authorized>
-        <h1>Admin</h1>
-    </Authorized>
-</AuthorizeView>
+<h1>Admin</h1>

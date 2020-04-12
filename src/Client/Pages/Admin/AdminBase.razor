@@ -1,0 +1,15 @@
+@using Microsoft.AspNetCore.Authorization
+@using DevOpsLab.Shared
+@using DevOpsLab.Client.Services.Hub
+
+@attribute [Authorize(Policy = PolicyTypes.RequireAdmin)]
+
+@code{
+
+    [Inject]
+    public AdminHubClient AdminHubClient { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+}

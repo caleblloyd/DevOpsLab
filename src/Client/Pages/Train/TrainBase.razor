@@ -1,0 +1,14 @@
+@using Microsoft.AspNetCore.Authorization
+@using DevOpsLab.Client.Services.Hub
+
+@attribute [Authorize]
+
+@code{
+
+    [Inject]
+    public TrainHubClient TrainHubClient { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+}

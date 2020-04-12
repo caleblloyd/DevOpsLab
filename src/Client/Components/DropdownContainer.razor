@@ -14,7 +14,7 @@
 
     private bool _isOpen;
 
-    private readonly DotNetObjectReference<DropdownContainer> _objRef;
+    private DotNetObjectReference<DropdownContainer> _objRef;
 
     public string DropdownOpenClass => _isOpen ? "open" : "";
 
@@ -22,7 +22,7 @@
 
     private string Selector => $"#{Id}";
 
-    public DropdownContainer()
+    protected override void OnInitialized()
     {
         _objRef = DotNetObjectReference.Create(this);
     }

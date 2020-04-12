@@ -1,11 +1,5 @@
 ﻿@page "/train"
-@using DevOpsLab.Client.Services.Hub
 
-@inject TrainHubClient TrainHubClient
+@inherits TrainBase
 
-<AuthorizeView>
-    <Authorized>
-        <h1>Train</h1>
-    </Authorized>
-</AuthorizeView>
-
+<h1>Train</h1>

@@ -12,10 +12,10 @@ namespace DevOpsLab.Client.Services.Hub
     public abstract class HubClient
     {
         protected HubConnection HubConnection;
+        private readonly NavigationManager _navigationManager;
 
         // workaround https://github.com/dotnet/aspnetcore/pull/20466
         private readonly IAccessTokenProvider _accessTokenProvider;
-        private readonly NavigationManager _navigationManager;
         private readonly SemaphoreSlim _hubConnectionWorkaroundSemaphoreSlim = new SemaphoreSlim(1);
 
         private HubConnection _hubConnectionWorkaround;
@@ -62,6 +62,8 @@ namespace DevOpsLab.Client.Services.Hub
         protected abstract string Endpoint { get; set; }
 
         protected abstract bool ShouldConnect(UriBuilder uriBuilder);
+
+        public bool ShouldConnectHere => ShouldConnect(_navigationManager.UriBuilder());
 
         private async Task LocationChanged(UriBuilder uriBuilder)
         {
