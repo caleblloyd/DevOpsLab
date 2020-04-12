@@ -15,11 +15,11 @@ namespace DevOpsLab.Server.Config
             _config = config;
             _lazyConnectionString = new Lazy<string>(() => ParseConnectionString());
         }
-        
+
         public string ConnectionString => _lazyConnectionString.Value;
 
         public string DbName => _config.GetValue("Data:Postgres:Connection:database", "");
-        
+
         public string MasterConnectionString => ParseConnectionString(new HashSet<string>(new[] {"database"}));
 
         private string ParseConnectionString(ISet<string> skip = null)

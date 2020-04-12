@@ -8,7 +8,7 @@ namespace DevOpsLab.Shared.Models.BaseModels
 {
     public abstract class BaseModel : IModel
     {
-        protected static void OnModelCreating<T>(ModelBuilder modelBuilder) where T:BaseModel
+        protected static void OnModelCreating<T>(ModelBuilder modelBuilder) where T : BaseModel
         {
             modelBuilder.Entity<T>(entity =>
             {
@@ -19,9 +19,9 @@ namespace DevOpsLab.Shared.Models.BaseModels
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
         }
-        
+
         [Key] public Guid Id { get; set; }
-        
+
         public DateTime Created { get; set; }
     }
 }

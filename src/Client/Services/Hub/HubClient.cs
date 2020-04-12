@@ -63,8 +63,6 @@ namespace DevOpsLab.Client.Services.Hub
 
         protected abstract bool ShouldConnect(UriBuilder uriBuilder);
 
-        public bool ShouldConnectHere => ShouldConnect(_navigationManager.UriBuilder());
-
         private async Task LocationChanged(UriBuilder uriBuilder)
         {
             // workaround https://github.com/dotnet/aspnetcore/pull/20466
@@ -81,7 +79,6 @@ namespace DevOpsLab.Client.Services.Hub
                         if (tokenResult.TryGetToken(out var token))
                         {
                             tokenValue = token.Value;
-                            Console.WriteLine(tokenValue);
                         }
                         else
                         {

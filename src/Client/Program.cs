@@ -20,10 +20,7 @@ namespace DevOpsLab.Client
             // https://github.com/dotnet/aspnetcore/issues/19854
             // https://github.com/dotnet/AspNetCore.Docs/issues/17649#issuecomment-612442543
             builder.Services.AddApiAuthorization();
-            builder.Services.AddApiAuthorization(options =>
-            {
-                options.UserOptions.RoleClaim = "role";
-            });
+            builder.Services.AddApiAuthorization(options => { options.UserOptions.RoleClaim = "role"; });
             builder.Services.AddSingleton<AdminHubClient>();
             builder.Services.AddSingleton<InstructHubClient>();
             builder.Services.AddSingleton<TrainHubClient>();

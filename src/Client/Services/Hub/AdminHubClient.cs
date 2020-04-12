@@ -16,7 +16,7 @@ namespace DevOpsLab.Client.Services.Hub
 
         protected override bool ShouldConnect(UriBuilder uriBuilder) =>
             uriBuilder.IsAdminPath();
-        
+
         protected override string Endpoint { get; set; } = "/hubs/admin";
     }
 }

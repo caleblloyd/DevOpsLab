@@ -7,6 +7,5 @@ namespace DevOpsLab.Server.Hubs
     [Authorize(Policy = PolicyTypes.RequireInstructor)]
     public class InstructHub : Hub
     {
-        
     }
 }

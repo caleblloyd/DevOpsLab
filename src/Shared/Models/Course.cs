@@ -23,7 +23,7 @@ namespace DevOpsLab.Shared.Models
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
-        
+
         public virtual RankedList<Scenario> Scenarios { get; set; } = new RankedList<Scenario>();
 
         public virtual RankedList<TrackCourse> TrackCourses { get; set; } = new RankedList<TrackCourse>();

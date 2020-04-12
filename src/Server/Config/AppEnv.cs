@@ -7,7 +7,7 @@ namespace DevOpsLab.Server.Config
     public static class AppEnv
     {
         public static IServiceProvider ServiceProvider;
-        
+
         public static string AspNetCoreEnvironment =>
             Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 

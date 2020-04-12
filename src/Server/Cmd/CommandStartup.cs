@@ -11,7 +11,7 @@ namespace DevOpsLab.Server.Cmd
     public class CommandStartup
     {
         private readonly AppConfig _config;
-        
+
         public CommandStartup(IConfiguration configuration)
         {
             _config = new AppConfig(configuration);

@@ -7,6 +7,5 @@ namespace DevOpsLab.Server.Hubs
     [Authorize(Policy = PolicyTypes.RequireAdmin)]
     public class AdminHub : Hub
     {
-        
     }
 }

@@ -11,12 +11,12 @@ namespace DevOpsLab.Server.Hubs
     public class TrainHub : Hub
     {
         private AppDb _db;
-        
+
         public TrainHub(AppDb db)
         {
             _db = db;
         }
-        
+
         public Task ListTrainingCodes()
         {
             Console.WriteLine(Context.UserIdentifier);

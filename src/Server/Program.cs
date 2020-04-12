@@ -66,6 +66,7 @@ namespace DevOpsLab.Server
                     using var db = scope.ServiceProvider.GetService<AppDb>();
                     db.Database.ExecuteSqlRaw("DELETE FROM OrleansMembershipTable");
                 }
+
                 host.Run();
             }
             else

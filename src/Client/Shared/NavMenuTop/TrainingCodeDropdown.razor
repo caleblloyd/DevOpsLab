@@ -1,10 +1,11 @@
 ﻿@using DevOpsLab.Client.Components
+@using DevOpsLab.Client.Helpers
 @using DevOpsLab.Client.Pages.Train
 
 @inherits TrainBase
 @implements IDisposable
 
-@if (TrainHubClient.ShouldConnectHere)
+@if (Visible)
 {
     DropdownContainer dropdownContainer = null;
     <DropdownContainer @ref="dropdownContainer">
@@ -24,18 +25,36 @@
 }
 
 @code {
+    
+    Tuple<bool> _locationState;
+
+    private bool Visible => NavigationManager.UriBuilder().IsTrainPath()
+                            || NavigationManager.UriBuilder().IsInstructPath();
+
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += LocationChanged;
+        LocationChangedInternal();
     }
 
     private void LocationChanged(object sender, LocationChangedEventArgs locationChanged)
     {
-        StateHasChanged();
+        LocationChangedInternal();
+    }
+
+    private void LocationChangedInternal()
+    {
+        var locationState = new Tuple<bool>(Visible);
+        if (_locationState == null || !locationState.Equals(_locationState))
+        {
+            StateHasChanged();
+        }
+        _locationState = locationState;
     }
 
     public void Dispose()
     {
         NavigationManager.LocationChanged -= LocationChanged;
     }
+
 }

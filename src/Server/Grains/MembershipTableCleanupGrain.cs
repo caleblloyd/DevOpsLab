@@ -20,7 +20,6 @@ namespace DevOpsLab.Server.Grains
         {
             _db = appDb;
             _logger = logger;
-            
         }
 
         public async Task Cleanup()

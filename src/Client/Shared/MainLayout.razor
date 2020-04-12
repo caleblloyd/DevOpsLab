@@ -1,15 +1,58 @@
 ﻿@using DevOpsLab.Client.Shared.NavMenuTop
+@using DevOpsLab.Client.Helpers
+@using DevOpsLab.Client.Pages.Admin
 
 @inherits LayoutComponentBase
 
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
+
 <div class="main-container">
-    <NavMenuTop />
+    <NavMenuTop/>
     <div class="content-container">
-        <nav class="sidenav">
-            
-        </nav>
+        @if (SideNavVisible)
+        {
+            <nav class="sidenav">
+            </nav>
+        }
         <div class="content-area">
             @Body
         </div>
     </div>
 </div>
+
+@code {
+    Tuple<bool, bool> _locationState;
+
+    private bool SideNavVisible => NavigationManager.UriBuilder().IsAdminPath();
+
+    private bool AdminVisible => NavigationManager.UriBuilder().IsAdminPath();
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += LocationChanged;
+        LocationChangedInternal();
+    }
+
+    private void LocationChanged(object sender, LocationChangedEventArgs locationChanged)
+    {
+        LocationChangedInternal();
+    }
+
+    private void LocationChangedInternal()
+    {
+        var locationState = new Tuple<bool, bool>(SideNavVisible, AdminVisible);
+        if (_locationState == null || !locationState.Equals(_locationState))
+        {
+            StateHasChanged();
+        }
+        _locationState = locationState;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+}

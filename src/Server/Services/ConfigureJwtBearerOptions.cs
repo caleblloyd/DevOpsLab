@@ -19,7 +19,7 @@ namespace DevOpsLab.Server.Services
             {
                 // call the original OnMessageReceived event
                 await originalOnMessageReceived(context);
-                
+
                 if (string.IsNullOrEmpty(context.Token))
                 {
                     // attempt to read the access token from the query string

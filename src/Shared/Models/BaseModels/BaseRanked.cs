@@ -10,7 +10,7 @@ namespace DevOpsLab.Shared.Models.BaseModels
             BaseModel.OnModelCreating<T>(modelBuilder);
             modelBuilder.Entity<T>(entity => { entity.HasIndex(m => m.Rank); });
         }
-        
+
         public double? Rank { get; set; }
     }
 }
