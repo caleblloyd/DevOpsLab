@@ -1,3 +1,20 @@
 .header-actions .nav-btn {
-    margin: 0 12px;
+  margin: 0 12px;
+}
+
+textarea {
+  font-family: sans-serif;
+  display: block;
+  width: 100%;
+  min-height: 100px;
+  max-height: 500px;
+  padding: 8px;
+  resize: vertical;
+  background-color: #fff;
+  font-size: 14px;
+  border: 1px solid #e8e8e8;
+}
+
+.md-textarea {
+  height: 200px;
 }

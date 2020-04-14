@@ -1,6 +1,7 @@
 ﻿@inject IJSRuntime JsRuntime
 
 @using System.Globalization
+@using DevOpsLab.Client.Helpers
 @implements IDisposable
 
 <CascadingValue Value="this">
@@ -12,14 +13,11 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    private bool _isOpen;
-
-    private DotNetObjectReference<DropdownContainer> _objRef;
-
+    public readonly string Id = ElementHelper.NewId();
     public string DropdownOpenClass => _isOpen ? "open" : "";
 
-    public readonly string Id = Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture);
-
+    private bool _isOpen;
+    private DotNetObjectReference<DropdownContainer> _objRef;
     private string Selector => $"#{Id}";
 
     protected override void OnInitialized()

@@ -3,5 +3,5 @@
 cd "$(dirname $0)/../../"
 
 cloc \
-    --exclude-dir=.bin,.obj,node_modules,vendor,wwwroot,Migrations \
+    --exclude-dir=.bin,.obj,node_modules,vendor,wwwroot,Data,Migrations \
     --not-match-d="^\..*\$" --force-lang=Razor,razor .

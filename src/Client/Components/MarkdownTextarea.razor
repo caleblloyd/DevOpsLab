@@ -1,0 +1,56 @@
+﻿@using DevOpsLab.Shared.Helpers
+@using DevOpsLab.Client.Helpers
+
+<ul class="nav" role="tablist">
+    <li role="presentation" class="nav-item">
+        <button id="@Id-edit-button"
+                class="btn btn-link nav-link @(Edit ? "active" : "")"
+                aria-controls="editPanel"
+                aria-selected="@(Edit ? "true" : "false")"
+                type="button"
+                @onclick="EditClicked">
+            Edit
+        </button>
+    </li>
+    <li role="presentation" class="nav-item">
+        <button id="@Id-preview-button"
+                class="btn btn-link nav-link @(Preview ? "active" : "")"
+                aria-controls="previewPanel"
+                aria-selected="@(Preview ? "true" : "false")"
+                type="button"
+                @onclick="PreviewClicked">
+            Preview
+        </button>
+    </li>
+</ul>
+<section role="tabpanel" aria-labelledby="@Id-edit-button" aria-hidden="@(!Edit ? "true" : "false")">
+    <textarea class="md-textarea" @bind="Value"></textarea>
+</section>
+<section role="tabpanel" aria-labelledby="@Id-preview-button" aria-hidden="@(!Preview ? "true" : "false")">
+    @((MarkupString) _html)
+</section>
+
+@code {
+
+    [Parameter]
+    public string Value { get; set; }
+
+    public readonly string Id = ElementHelper.NewId();
+
+    private Tuple<bool, bool> _tabState = new Tuple<bool, bool>(true, false);
+    private string _html;
+    private bool Edit => _tabState.Item1;
+    private bool Preview => _tabState.Item2;
+
+    private void EditClicked()
+    {
+        _tabState = new Tuple<bool, bool>(true, false);
+    }
+
+    private void PreviewClicked()
+    {
+        _html = MarkdownHelper.ToHtml(Value);
+        _tabState = new Tuple<bool, bool>(false, true);
+    }
+
+}
