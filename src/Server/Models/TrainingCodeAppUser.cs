@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DevOpsLab.Shared.Models.BaseModels;
+using System.Linq;
+using DevOpsLab.Server.Models.BaseModels;
+using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models
+namespace DevOpsLab.Server.Models
 {
     public class TrainingCodeAppUser : BaseModel
     {
@@ -25,10 +28,25 @@ namespace DevOpsLab.Shared.Models
             });
         }
 
-        [Required] public Guid TrainingCodeId { get; set; }
+        public static implicit operator TrainingCodeAppUserVM(TrainingCodeAppUser model)
+        {
+            return new TrainingCodeAppUserVM
+            {
+                Id = model.Id,
+                TrainingCode = model.TrainingCode,
+                AppUser = model.AppUser,
+                Expires = model.Expires
+            };
+        }
+
+        public Guid TrainingCodeId { get; set; }
         public virtual TrainingCode TrainingCode { get; set; }
 
-        [Required] public string AppUserId { get; set; }
+        public string AppUserId { get; set; }
         public virtual AppUser AppUser { get; set; }
+
+        public bool Active { get; set; } = true;
+
+        public DateTimeOffset? Expires { get; set; }
     }
 }

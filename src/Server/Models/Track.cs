@@ -1,9 +1,12 @@
 using System.Collections.Generic;
-using DevOpsLab.Shared.Models.BaseModels;
-using DevOpsLab.Shared.Models.Collections;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using DevOpsLab.Server.Models.BaseModels;
+using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models
+namespace DevOpsLab.Server.Models
 {
     public class Track : BaseRankedModel
     {
@@ -22,8 +25,27 @@ namespace DevOpsLab.Shared.Models
                     .HasForeignKey(m => m.TrackId)
                     .HasPrincipalKey(m => m.Id)
                     .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(m => m.Alias);
             });
         }
+
+        public static implicit operator TrackVM(Track model)
+        {
+            return new TrackVM
+            {
+                Id = model.Id,
+                Name = model.Name,
+                Alias = model.Alias,
+                Courses = model.TrackCourses
+                    .Select<TrackCourse, CourseVM>(m => m.Course),
+                TrainingCodes = model.TrainingCodeTracks
+                    .Select<TrainingCodeTrack, TrainingCodeVM>(m => m.TrainingCode)
+            };
+        }
+
+        [Required] public string Name { get; set; }
+
+        [Required] public string Alias { get; set; }
 
         public virtual RankedList<TrackCourse> TrackCourses { get; set; } = new RankedList<TrackCourse>();
 

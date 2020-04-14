@@ -1,6 +1,6 @@
 using System;
 
-namespace DevOpsLab.Shared.Models.Interfaces
+namespace DevOpsLab.Server.Models.Interfaces
 {
     public interface IModel
     {

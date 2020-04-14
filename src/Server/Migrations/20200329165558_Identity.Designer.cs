@@ -21,7 +21,7 @@ namespace DevOpsLab.Server.Migrations
                 .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.ApplicationUser", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -312,7 +312,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.ApplicationUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -321,7 +321,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.ApplicationUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -336,7 +336,7 @@ namespace DevOpsLab.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DevOpsLab.Shared.Models.ApplicationUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -345,7 +345,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.ApplicationUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

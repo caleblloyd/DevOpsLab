@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using DevOpsLab.Shared.Models.BaseModels;
-using DevOpsLab.Shared.Models.Collections;
+using System.Linq;
+using DevOpsLab.Server.Models.BaseModels;
+using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models
+namespace DevOpsLab.Server.Models
 {
     public class TrainingCode : BaseModel
     {
@@ -28,11 +30,29 @@ namespace DevOpsLab.Shared.Models
             });
         }
 
+        public static implicit operator TrainingCodeVM(TrainingCode model)
+        {
+            return new TrainingCodeVM
+            {
+                Id = model.Id,
+                Code = model.Code,
+                MaxUsers = model.MaxUsers,
+                ExpiresAfter = model.ExpiresAfter,
+                TrainingCodeAppUsers = model.TrainingCodeAppUsers
+                    .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m),
+                Tracks = model.TrainingCodeTracks
+                    .Select<TrainingCodeTrack, TrackVM>(m => m.Track)
+            };
+        }
+
         [Required] public string Code { get; set; }
 
         public int MaxUsers { get; set; }
 
-        public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } = new List<TrainingCodeAppUser>();
+        public TimeSpan? ExpiresAfter { get; set; }
+
+        public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } =
+            new List<TrainingCodeAppUser>();
 
         public virtual RankedList<TrainingCodeTrack> TrainingCodeTracks { get; set; } =
             new RankedList<TrainingCodeTrack>();

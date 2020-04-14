@@ -19,7 +19,7 @@ namespace DevOpsLab.Server.Migrations
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.AppUser", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -83,27 +83,45 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Course", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Course", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Scenario", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Scenario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
@@ -113,17 +131,27 @@ namespace DevOpsLab.Server.Migrations
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.HasIndex("CourseId");
 
                     b.ToTable("Scenarios");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Step", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Step", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,6 +159,14 @@ namespace DevOpsLab.Server.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
@@ -145,28 +181,38 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("Step");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Track", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Track", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.HasIndex("Rank");
 
                     b.ToTable("Tracks");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrackCourse", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrackCourse", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -197,7 +243,7 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("TrackCourses");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrainingCode", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrainingCode", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,6 +258,9 @@ namespace DevOpsLab.Server.Migrations
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<TimeSpan?>("ExpiresAfter")
+                        .HasColumnType("interval");
+
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
 
@@ -222,20 +271,25 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("TrainingCodes");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrainingCodeAppUser", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrainingCodeAppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTimeOffset?>("Expires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TrainingCodeId")
                         .HasColumnType("uuid");
@@ -249,7 +303,7 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("TrainingCodeAppUsers");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrainingCodeTrack", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrainingCodeTrack", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -496,63 +550,62 @@ namespace DevOpsLab.Server.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Scenario", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Scenario", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.Course", "Course")
+                    b.HasOne("DevOpsLab.Server.Models.Course", "Course")
                         .WithMany("Scenarios")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.Step", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.Step", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.Scenario", "Scenario")
+                    b.HasOne("DevOpsLab.Server.Models.Scenario", "Scenario")
                         .WithMany("Steps")
                         .HasForeignKey("ScenarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrackCourse", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrackCourse", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.Course", "Course")
+                    b.HasOne("DevOpsLab.Server.Models.Course", "Course")
                         .WithMany("TrackCourses")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DevOpsLab.Shared.Models.Track", "Track")
+                    b.HasOne("DevOpsLab.Server.Models.Track", "Track")
                         .WithMany("TrackCourses")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrainingCodeAppUser", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrainingCodeAppUser", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.AppUser", "AppUser")
+                    b.HasOne("DevOpsLab.Server.Models.AppUser", "AppUser")
                         .WithMany("TrainingCodeAppUsers")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DevOpsLab.Shared.Models.TrainingCode", "TrainingCode")
+                    b.HasOne("DevOpsLab.Server.Models.TrainingCode", "TrainingCode")
                         .WithMany("TrainingCodeAppUsers")
                         .HasForeignKey("TrainingCodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevOpsLab.Shared.Models.TrainingCodeTrack", b =>
+            modelBuilder.Entity("DevOpsLab.Server.Models.TrainingCodeTrack", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.Track", "Track")
+                    b.HasOne("DevOpsLab.Server.Models.Track", "Track")
                         .WithMany("TrainingCodeTracks")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DevOpsLab.Shared.Models.TrainingCode", "TrainingCode")
+                    b.HasOne("DevOpsLab.Server.Models.TrainingCode", "TrainingCode")
                         .WithMany("TrainingCodeTracks")
                         .HasForeignKey("TrainingCodeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -570,7 +623,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.AppUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -579,7 +632,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.AppUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -594,7 +647,7 @@ namespace DevOpsLab.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DevOpsLab.Shared.Models.AppUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -603,7 +656,7 @@ namespace DevOpsLab.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("DevOpsLab.Shared.Models.AppUser", null)
+                    b.HasOne("DevOpsLab.Server.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

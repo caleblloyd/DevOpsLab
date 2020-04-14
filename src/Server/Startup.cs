@@ -14,8 +14,9 @@ using DevOpsLab.Server.Grains;
 using DevOpsLab.Server.Helpers.Services;
 using DevOpsLab.Server.Hubs;
 using DevOpsLab.Server.Services;
-using DevOpsLab.Shared.Models;
+using DevOpsLab.Server.Models;
 using DevOpsLab.Shared;
+using IdentityModel;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -52,11 +53,12 @@ namespace DevOpsLab.Server
                 .AddApiAuthorization<AppUser, AppDb>(options =>
                 {
                     // https://github.com/dotnet/AspNetCore.Docs/issues/17649
-                    options.IdentityResources["openid"].UserClaims.Add("role");
-                    options.ApiResources.Single().UserClaims.Add("role");
+                    options.IdentityResources["openid"].UserClaims.Add(JwtClaimTypes.Name);
+                    options.IdentityResources["openid"].UserClaims.Add(JwtClaimTypes.Role);
+                    options.ApiResources.Single().UserClaims.Add(JwtClaimTypes.Role);
                 });
             // Need to do this as it maps "role" to ClaimTypes.Role and causes issues
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove(JwtClaimTypes.Role);
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

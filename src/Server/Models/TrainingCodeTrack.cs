@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using DevOpsLab.Shared.Models.BaseModels;
+using DevOpsLab.Server.Models.BaseModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models
+namespace DevOpsLab.Server.Models
 {
     public class TrainingCodeTrack : BaseRankedModel
     {
@@ -25,10 +25,10 @@ namespace DevOpsLab.Shared.Models
             });
         }
 
-        [Required] public Guid TrainingCodeId { get; set; }
+        public Guid TrainingCodeId { get; set; }
         public virtual TrainingCode TrainingCode { get; set; }
 
-        [Required] public Guid TrackId { get; set; }
+        public Guid TrackId { get; set; }
         public virtual Track Track { get; set; }
     }
 }

@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using DevOpsLab.Server.Db;
-using DevOpsLab.Shared.Models;
+using DevOpsLab.Server.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +50,10 @@ namespace DevOpsLab.Server.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "Name")]
+            public string Name { get; set; }
+
+            [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
@@ -80,6 +86,13 @@ namespace DevOpsLab.Server.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    var setNameResult = await _userManager.AddClaimAsync(user, new Claim(JwtClaimTypes.Name, Input.Name));
+                    if (!setNameResult.Succeeded)
+                    {
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        throw new InvalidOperationException($"Unexpected error occurred setting name for user with ID '{userId}'.");
+                    }
+                    
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

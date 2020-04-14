@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using DevOpsLab.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models
+namespace DevOpsLab.Server.Models
 {
     public class AppUser : IdentityUser
     {
@@ -18,6 +21,16 @@ namespace DevOpsLab.Shared.Models
             });
         }
 
-        public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } = new List<TrainingCodeAppUser>();
+        public static implicit operator AppUserVM(AppUser model)
+        {
+            return new AppUserVM
+            {
+                TrainingCodeAppUsers = model.TrainingCodeAppUsers
+                    .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m)
+            };
+        }
+        
+        public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } =
+            new List<TrainingCodeAppUser>();
     }
 }

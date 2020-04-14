@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DevOpsLab.Server.Migrations
 {
     [DbContext(typeof(AppDb))]
-    [Migration("20200405110844_InitialModels")]
-    partial class InitialModels
+    [Migration("20200414230145_UseNameClaim")]
+    partial class UseNameClaim
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,12 +91,26 @@ namespace DevOpsLab.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.ToTable("Courses");
                 });
@@ -107,6 +121,10 @@ namespace DevOpsLab.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uuid");
 
@@ -115,10 +133,20 @@ namespace DevOpsLab.Server.Migrations
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.HasIndex("CourseId");
 
@@ -133,6 +161,14 @@ namespace DevOpsLab.Server.Migrations
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
@@ -153,15 +189,25 @@ namespace DevOpsLab.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Alias")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double?>("Rank")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Alias");
 
                     b.HasIndex("Rank");
 
@@ -214,6 +260,9 @@ namespace DevOpsLab.Server.Migrations
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                    b.Property<TimeSpan?>("ExpiresAfter")
+                        .HasColumnType("interval");
+
                     b.Property<int>("MaxUsers")
                         .HasColumnType("integer");
 
@@ -230,14 +279,19 @@ namespace DevOpsLab.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TIMESTAMP WITH TIME ZONE")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTimeOffset?>("Expires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TrainingCodeId")
                         .HasColumnType("uuid");
@@ -536,8 +590,7 @@ namespace DevOpsLab.Server.Migrations
                     b.HasOne("DevOpsLab.Server.Models.AppUser", "AppUser")
                         .WithMany("TrainingCodeAppUsers")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DevOpsLab.Server.Models.TrainingCode", "TrainingCode")
                         .WithMany("TrainingCodeAppUsers")

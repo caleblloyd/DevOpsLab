@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using DevOpsLab.Shared.Helpers.Data;
-using DevOpsLab.Shared.Models.Interfaces;
+using DevOpsLab.Server.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsLab.Shared.Models.BaseModels
+namespace DevOpsLab.Server.Models.BaseModels
 {
     public abstract class BaseModel : IModel
     {

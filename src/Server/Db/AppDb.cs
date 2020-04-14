@@ -1,4 +1,4 @@
-using DevOpsLab.Shared.Models;
+using DevOpsLab.Server.Models;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;

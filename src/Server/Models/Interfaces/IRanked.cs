@@ -1,4 +1,4 @@
-namespace DevOpsLab.Shared.Models.Interfaces
+namespace DevOpsLab.Server.Models.Interfaces
 {
     public interface IRanked
     {

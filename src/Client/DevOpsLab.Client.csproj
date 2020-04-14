@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" Version="5.0.310" />
+    <PackageReference Include="Markdig" Version="0.18.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.0-preview3.20168.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0-preview3.20168.3" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0-preview3.20168.3" PrivateAssets="all" />
@@ -13,25 +15,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="3.2.0-preview3.20168.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.3" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Shared\DevOpsLab.Shared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Components\Datagrid\Datagrid.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Components\Datagrid\DatagridColumn.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Components\Datagrid\DatagridRow.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Components\Datagrid\DatagridCell.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Components\MarkdownTextarea.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
   </ItemGroup>
 
 </Project>

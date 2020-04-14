@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DevOpsLab.Shared.Models.Interfaces;
+using DevOpsLab.Server.Models.Interfaces;
 
-namespace DevOpsLab.Shared.Models.Collections
+namespace DevOpsLab.Server.Models.Collections
 {
     public class RankedList<T> : IList<T> where T : IRanked
     {

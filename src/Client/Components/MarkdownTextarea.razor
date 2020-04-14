@@ -1,5 +1,4 @@
-﻿@using DevOpsLab.Shared.Helpers
-@using DevOpsLab.Client.Helpers
+﻿@using DevOpsLab.Client.Helpers
 
 <ul class="nav" role="tablist">
     <li role="presentation" class="nav-item">
@@ -24,21 +23,20 @@
     </li>
 </ul>
 <section role="tabpanel" aria-labelledby="@Id-edit-button" aria-hidden="@(!Edit ? "true" : "false")">
-    <textarea class="md-textarea" @bind="Value"></textarea>
+    <textarea class="md-textarea" @bind="StringParam.Value"></textarea>
 </section>
 <section role="tabpanel" aria-labelledby="@Id-preview-button" aria-hidden="@(!Preview ? "true" : "false")">
-    @((MarkupString) _html)
+    @((MarkupString) HtmlHelper.MarkdownToHtml(StringParam.Value))
 </section>
 
 @code {
 
     [Parameter]
-    public string Value { get; set; }
+    public StringParam StringParam { get; set; }
 
     public readonly string Id = ElementHelper.NewId();
 
     private Tuple<bool, bool> _tabState = new Tuple<bool, bool>(true, false);
-    private string _html;
     private bool Edit => _tabState.Item1;
     private bool Preview => _tabState.Item2;
 
@@ -49,7 +47,6 @@
 
     private void PreviewClicked()
     {
-        _html = MarkdownHelper.ToHtml(Value);
         _tabState = new Tuple<bool, bool>(false, true);
     }
 
