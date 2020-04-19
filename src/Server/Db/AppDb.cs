@@ -1,12 +1,12 @@
 using DevOpsLab.Server.Models;
+using DevOpsLab.Server.Services;
 using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace DevOpsLab.Server.Db
 {
-    public class AppDb : ApiAuthorizationDbContext<AppUser>
+    public class AppDb : ApiAuthorizationDbContext<AppUser, AppRole, AppUserRole>
     {
         public AppDb(
             DbContextOptions options,
@@ -31,6 +31,9 @@ namespace DevOpsLab.Server.Db
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            AppRole.OnModelCreating(modelBuilder);
+            AppUser.OnModelCreating(modelBuilder);
             Course.OnModelCreating(modelBuilder);
             Scenario.OnModelCreating(modelBuilder);
             Track.OnModelCreating(modelBuilder);

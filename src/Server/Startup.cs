@@ -46,7 +46,7 @@ namespace DevOpsLab.Server
             services.ConfigureEntityFramework(_config);
 
             services.AddDefaultIdentity<AppUser>(options => { options.SignIn.RequireConfirmedAccount = true; })
-                .AddRoles<IdentityRole>()
+                .AddRoles<AppRole>()
                 .AddEntityFrameworkStores<AppDb>();
 
             services.AddIdentityServer()

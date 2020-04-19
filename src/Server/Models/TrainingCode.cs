@@ -29,10 +29,12 @@ namespace DevOpsLab.Server.Models
                 entity.HasIndex(m => m.Code);
             });
         }
+        
+        private TrainingCodeVM ViewModel { get; set; }
 
         public static implicit operator TrainingCodeVM(TrainingCode model)
         {
-            return new TrainingCodeVM
+            return model.ViewModel ??= new TrainingCodeVM
             {
                 Id = model.Id,
                 Code = model.Code,

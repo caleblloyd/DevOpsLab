@@ -28,9 +28,11 @@ namespace DevOpsLab.Server.Models
             });
         }
 
+        private TrainingCodeAppUserVM ViewModel { get; set; }
+
         public static implicit operator TrainingCodeAppUserVM(TrainingCodeAppUser model)
         {
-            return new TrainingCodeAppUserVM
+            return model.ViewModel ??= new TrainingCodeAppUserVM
             {
                 Id = model.Id,
                 TrainingCode = model.TrainingCode,

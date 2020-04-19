@@ -28,9 +28,11 @@ namespace DevOpsLab.Server.Models
             });
         }
 
+        private CourseVM ViewModel { get; set; }
+
         public static implicit operator CourseVM(Course model)
         {
-            return new CourseVM
+            return model.ViewModel ??= new CourseVM
             {
                 Id = model.Id,
                 Name = model.Name,

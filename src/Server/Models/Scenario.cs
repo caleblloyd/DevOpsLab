@@ -23,10 +23,12 @@ namespace DevOpsLab.Server.Models
                 entity.HasIndex(m => m.Alias);
             });
         }
+        
+        private ScenarioVM ViewModel { get; set; }
 
         public static implicit operator ScenarioVM(Scenario model)
         {
-            return new ScenarioVM
+            return model.ViewModel ??= new ScenarioVM
             {
                 Id = model.Id,
                 Name = model.Name,

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using DevOpsLab.Shared;
 using DevOpsLab.Shared.ViewModels;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,19 +20,65 @@ namespace DevOpsLab.Server.Models
                     .HasForeignKey(m => m.AppUserId)
                     .HasPrincipalKey(m => m.Id)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                // Navigation Properties Begin
+                // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-3.1#add-all-user-navigation-properties
+                entity.HasMany(e => e.UserClaims)
+                    .WithOne()
+                    .HasForeignKey(uc => uc.UserId)
+                    .IsRequired();
+
+                entity.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+                // Navigation Properties End
             });
         }
 
+        private AppUserVM ViewModel { get; set; }
+
         public static implicit operator AppUserVM(AppUser model)
         {
-            return new AppUserVM
+            return model.ViewModel ??= new AppUserVM
             {
                 TrainingCodeAppUsers = model.TrainingCodeAppUsers
                     .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m)
             };
         }
-        
+
+        [NotMapped] public string Name => UserClaims.FirstOrDefault(m => m.ClaimType == JwtClaimTypes.Name)?.ClaimValue;
+
+        [NotMapped]
+        public string Role
+        {
+            get
+            {
+                var roleNames = UserRoles.Select(m => m.Role.Name);
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (roleNames.Contains(RoleTypes.Admin))
+                {
+                    return RoleTypes.Admin;
+                }
+
+                // ReSharper disable once PossibleMultipleEnumeration
+                if (roleNames.Contains(RoleTypes.Instructor))
+                {
+                    return RoleTypes.Instructor;
+                }
+
+                return "Student";
+            }
+        }
+
         public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } =
             new List<TrainingCodeAppUser>();
+
+        // Navigation Properties Begin
+        // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-3.1#add-user-and-role-navigation-properties
+        public virtual ICollection<IdentityUserClaim<string>> UserClaims { get; set; }
+
+        public virtual ICollection<AppUserRole> UserRoles { get; set; }
+        // Navigation Properties End
     }
 }

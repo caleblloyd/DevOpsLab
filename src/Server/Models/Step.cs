@@ -12,10 +12,12 @@ namespace DevOpsLab.Server.Models
         {
             BaseModel.OnModelCreating<Step>(modelBuilder);
         }
+        
+        private StepVM ViewModel { get; set; }
 
         public static implicit operator StepVM(Step model)
         {
-            return new StepVM
+            return model.ViewModel ??= new StepVM
             {
                 Id = model.Id,
                 Name = model.Name,

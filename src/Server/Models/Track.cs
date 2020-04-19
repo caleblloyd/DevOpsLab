@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
@@ -29,9 +28,11 @@ namespace DevOpsLab.Server.Models
             });
         }
 
+        private TrackVM ViewModel { get; set; }
+
         public static implicit operator TrackVM(Track model)
         {
-            return new TrackVM
+            return model.ViewModel ??= new TrackVM
             {
                 Id = model.Id,
                 Name = model.Name,
