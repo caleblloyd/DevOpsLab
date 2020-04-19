@@ -18,9 +18,11 @@
         <DatagridHeaderCell>
             <DatagridHeaderSort
                 Text="Email"
-                Sort="@_sortParam"
+                SortParam="@_sortParam"
                 SortAsc="@AppUserSort.EmailAsc"
                 SortDesc="@AppUserSort.EmailDesc"/>
+            <DatagridHeaderFilterString
+                OnChange="@(value => _filter.Email = value)"/>
         </DatagridHeaderCell>
         <DatagridHeaderCell Text="Role" Separator="false"/>
     </Header>
@@ -52,7 +54,5 @@
         }
         return listResponse;
     }
-
-
 
 }

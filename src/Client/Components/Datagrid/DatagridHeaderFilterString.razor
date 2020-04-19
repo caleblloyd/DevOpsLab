@@ -1,0 +1,70 @@
+@using DevOpsLab.Client.Components
+@using DevOpsLab.Client.Helpers
+
+@inject IJSRuntime JsRuntime
+
+<DropdownContainer @ref="_dropdownContainer" AfterOpenAsync="@AfterOpenAsync">
+    <clr-dg-string-filter id="@_dropdownContainer.Id" class="dropdown bottom-right @_dropdownContainer.DropdownOpenClass">
+        <clr-dg-filter>
+            <button
+                type="button"
+                class="datagrid-filter-toggle clr-anchor @(_dropdownContainer.IsOpen ? "datagrid-filter-open" : "")"
+                aria-label="Toggle column filter"
+                @onclick="_dropdownContainer.DropdownToggle">
+                <clr-icon class="is-solid" shape="filter-grid" role="none"/>
+            </button>
+        </clr-dg-filter>
+        <div class="datagrid-filter dropdown-menu">
+            <div class="datagrid-filter-close-wrapper">
+                <button type="button" class="close clr-smart-close-button" @onclick="_dropdownContainer.DropdownClose">
+                    <clr-icon shape="close" role="none" title="Close"/>
+                </button>
+            </div>
+            <input
+                id="@_inputId"
+                type="text"
+                name="search"
+                class="clr-input"
+                @onchange="InputChange"
+                @onkeypress="InputKeyPress">
+        </div>
+    </clr-dg-string-filter>
+</DropdownContainer>
+
+@code
+{
+    private DropdownContainer _dropdownContainer;
+
+    private readonly string _inputId = ElementHelper.NewId();
+
+    [CascadingParameter(Name = "Loading")]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public Action<string> OnChange { get; set; }
+
+    [CascadingParameter(Name = "Refresh")]
+    public Func<Task> Refresh { get; set; }
+
+    private async Task AfterOpenAsync()
+    {
+        await JsRuntime.InvokeVoidAsync(
+            "helpers.focus",
+            $"#{_inputId}");
+    }
+
+    private async Task InputChange(ChangeEventArgs eventArgs)
+    {
+        var value = (string) eventArgs.Value;
+        OnChange(string.IsNullOrEmpty(value) ? null : value);
+        await Refresh();
+    }
+
+    private async Task InputKeyPress(KeyboardEventArgs eventArgs)
+    {
+        if (eventArgs.Key.Equals("enter", StringComparison.OrdinalIgnoreCase))
+        {
+            await _dropdownContainer.DropdownClose();
+        }
+    }
+}

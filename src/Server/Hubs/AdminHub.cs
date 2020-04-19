@@ -1,18 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DevOpsLab.Server.Db;
 using DevOpsLab.Server.Helpers.Data;
 using DevOpsLab.Server.Models;
 using DevOpsLab.Shared;
 using DevOpsLab.Shared.Collections;
+using DevOpsLab.Shared.Filter;
 using DevOpsLab.Shared.Sort;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace DevOpsLab.Server.Hubs
 {
@@ -20,43 +20,51 @@ namespace DevOpsLab.Server.Hubs
     public class AdminHub : Hub
     {
         private readonly AppDb _db;
+        private readonly ILogger<AdminHub> _logger;
 
-        public AdminHub(AppDb db)
+        public AdminHub(AppDb db, ILogger<AdminHub> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         public async IAsyncEnumerable<ListResponse<AppUserVM>> UserList(
-            AppUserVM filter,
+            AppUserFilter filter,
             AppUserSort sort,
             Paginate paginate)
         {
-            IQueryable<AppUser> query = _db.Users
-                .Include(m => m.UserClaims)
-                .Include(m => m.UserRoles)
-                .ThenInclude(m => m.Role);
-
-            switch (sort)
+            ListResponse<AppUserVM> result;
+            try
             {
-                case AppUserSort.EmailAsc:
-                    query = query.OrderBy(m => m.Email);
-                    break;
-                case AppUserSort.EmailDesc:
-                    query = query.OrderByDescending(m => m.Email);
-                    break;
+                IQueryable<AppUser> query = _db.Users
+                    .Include(m => m.UserClaims)
+                    .Include(m => m.UserRoles)
+                    .ThenInclude(m => m.Role);
+
+                switch (sort)
+                {
+                    case AppUserSort.EmailAsc:
+                        query = query.OrderBy(m => m.Email);
+                        break;
+                    case AppUserSort.EmailDesc:
+                        query = query.OrderByDescending(m => m.Email);
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(filter.Email))
+                {
+                    query = query.Where(m => EF.Functions.ILike(m.Email, $"%{filter.Email}%"));
+                }
+
+                result = await PaginationHelper.FromQueryAsync<AppUser, AppUserVM>(paginate, query);
             }
-            
-            if (!string.IsNullOrEmpty(filter.Name))
+            catch (Exception e)
             {
-                query = query.Where(m => m.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
+                _logger.LogError(e.Message + "\n" + e.StackTrace, e);
+                throw;
             }
 
-            if (!string.IsNullOrEmpty(filter.Email))
-            {
-                query = query.Where(m => m.Email.Contains(filter.Email, StringComparison.OrdinalIgnoreCase));
-            }
-
-            yield return await PaginationHelper.FromQueryAsync<AppUser, AppUserVM>(paginate, query);
+            yield return result;
         }
     }
 }

@@ -19,7 +19,7 @@
     public bool Loading { get; set; }
 
     [Parameter]
-    public SortParam<TSort> Sort { get; set; }
+    public SortParam<TSort> SortParam { get; set; }
 
     [Parameter]
     public TSort SortAsc { get; set; }
@@ -33,9 +33,9 @@
     [Parameter]
     public string Text { get; set; }
 
-    private bool IsSorted => Sort.Value.Equals(SortAsc) || Sort.Value.Equals(SortDesc);
+    private bool IsSorted => SortParam.Value.Equals(SortAsc) || SortParam.Value.Equals(SortDesc);
 
-    private bool IsAsc => Sort.Value.Equals(SortAsc);
+    private bool IsAsc => SortParam.Value.Equals(SortAsc);
 
     private string ArrowShape => IsAsc ? "arrow" : "arrow down";
 
@@ -43,11 +43,11 @@
     {
         if (!IsSorted || !IsAsc)
         {
-            Sort.Value = SortAsc;
+            SortParam.Value = SortAsc;
         }
         else
         {
-            Sort.Value = SortDesc;
+            SortParam.Value = SortDesc;
         }
         await Refresh();
     }

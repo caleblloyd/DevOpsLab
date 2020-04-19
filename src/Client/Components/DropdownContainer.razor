@@ -13,40 +13,73 @@
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    public readonly string Id = ElementHelper.NewId();
-    public string DropdownOpenClass => _isOpen ? "open" : "";
+    [Parameter]
+    public Func<Task> BeforeOpenAsync { get; set; } = NoOpTask;
 
-    private bool _isOpen;
+    [Parameter]
+    public Func<Task> AfterOpenAsync { get; set; } = NoOpTask;
+
+    [Parameter]
+    public Func<Task> BeforeCloseAsync { get; set; } = NoOpTask;
+
+    [Parameter]
+    public Func<Task> AfterCloseAsync { get; set; } = NoOpTask;
+
+    public readonly string Id = ElementHelper.NewId();
+
     private DotNetObjectReference<DropdownContainer> _objRef;
-    private string Selector => $"#{Id}";
+
+    private static Task NoOpTask() => Task.CompletedTask;
 
     protected override void OnInitialized()
     {
         _objRef = DotNetObjectReference.Create(this);
     }
 
-    public Task DropdownToggle() => _isOpen ? DropdownClose() : DropdownOpen();
+    public string DropdownOpenClass => IsOpen ? "open" : "";
+
+    public bool IsOpen { get; private set; }
+
+    private string Selector => $"#{Id}";
+
+    public Task DropdownToggle() => IsOpen ? DropdownClose() : DropdownOpen();
 
     public async Task DropdownOpen()
     {
-        if (!_isOpen)
+        await BeforeOpenAsync();
+        await DropdownOpenInternal();
+        StateHasChanged();
+        await AfterOpenAsync();
+    }
+
+    private async Task DropdownOpenInternal()
+    {
+        if (!IsOpen)
         {
             await JsRuntime.InvokeVoidAsync("helpers.clickedOutsideAddListener",
                 _objRef,
                 nameof(DropdownClickedOff),
                 Selector);
-            _isOpen = true;
+            IsOpen = true;
         }
     }
 
     public async Task DropdownClose()
     {
-        if (_isOpen)
+        await BeforeCloseAsync();
+        await DropdownCloseInternal();
+        StateHasChanged();
+        await AfterCloseAsync();
+    }
+
+    private async Task DropdownCloseInternal()
+    {
+        if (IsOpen)
         {
             await JsRuntime.InvokeVoidAsync(
                 "helpers.clickedOutsideRemoveListener",
                 Selector);
-            _isOpen = false;
+            IsOpen = false;
         }
     }
 
@@ -54,7 +87,6 @@
     public async Task DropdownClickedOff()
     {
         await DropdownClose();
-        StateHasChanged();
     }
 
     public void Dispose()
@@ -62,9 +94,12 @@
         if (_objRef != null)
         {
 #pragma warning disable 4014
-            DropdownClose();
+            DropdownCloseInternal().ContinueWith(_ =>
+            {
+                _objRef.Dispose();
+                _objRef = null;
+            });
 #pragma warning restore 4014
-            _objRef.Dispose();
         }
     }
 
