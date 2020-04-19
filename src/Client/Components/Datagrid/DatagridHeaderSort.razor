@@ -1,0 +1,54 @@
+@typeparam TSort
+
+<button
+    type="button"
+    class="datagrid-column-title"
+    aria-label="Sort Column"
+    @onclick="SortClick"
+    disabled="@Loading">
+    @Text
+    @if (IsSorted)
+    {
+        <clr-icon class="sort-icon ng-star-inserted" role="none" shape="@ArrowShape"/>
+    }
+</button>
+
+@code
+{
+    [CascadingParameter(Name = "Loading")]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public SortParam<TSort> Sort { get; set; }
+
+    [Parameter]
+    public TSort SortAsc { get; set; }
+
+    [Parameter]
+    public TSort SortDesc { get; set; }
+
+    [CascadingParameter(Name = "Refresh")]
+    public Func<Task> Refresh { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    private bool IsSorted => Sort.Value.Equals(SortAsc) || Sort.Value.Equals(SortDesc);
+
+    private bool IsAsc => Sort.Value.Equals(SortAsc);
+
+    private string ArrowShape => IsAsc ? "arrow" : "arrow down";
+
+    private async Task SortClick()
+    {
+        if (!IsSorted || !IsAsc)
+        {
+            Sort.Value = SortAsc;
+        }
+        else
+        {
+            Sort.Value = SortDesc;
+        }
+        await Refresh();
+    }
+}

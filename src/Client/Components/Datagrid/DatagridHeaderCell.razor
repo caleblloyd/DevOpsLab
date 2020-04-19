@@ -1,9 +1,9 @@
 <clr-dg-column role="columnheader" class="datagrid-column" style="flex-basis: @FlexBasis">
     <div class="datagrid-column-flex">
-        @if (Text)
+        @if (!string.IsNullOrEmpty(Text))
         {
             <span class="datagrid-column-title">
-                @ChildContent
+                @Text
             </span>
         }
         else
@@ -23,7 +23,7 @@
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public bool Text { get; set; } = true;
+    public string Text { get; set; }
 
     [Parameter]
     public bool Separator { get; set; } = true;

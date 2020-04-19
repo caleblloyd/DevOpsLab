@@ -76,13 +76,13 @@
     [Parameter]
     public int ItemCount { get; set; }
 
-    [Parameter]
+    [CascadingParameter(Name = "Loading")]
     public bool Loading { get; set; }
 
     [Parameter]
     public Paginate Paginate { get; set; }
 
-    [Parameter]
+    [CascadingParameter(Name = "Refresh")]
     public Func<Task> Refresh { get; set; }
 
     [Parameter]

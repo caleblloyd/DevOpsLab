@@ -6,6 +6,7 @@
 @using DevOpsLab.Shared.Sort
 @using DevOpsLab.Shared.ViewModels
 @using Microsoft.AspNetCore.SignalR.Client
+@using DevOpsLab.Client.Components
 
 @inherits AdminBase
 
@@ -13,9 +14,15 @@
 
 <Datagrid Fetch="@Fetch" Paginate="true">
     <Header>
-        <DatagridHeaderCell>Name</DatagridHeaderCell>
-        <DatagridHeaderCell>Email</DatagridHeaderCell>
-        <DatagridHeaderCell Separator="false">Role</DatagridHeaderCell>
+        <DatagridHeaderCell Text="Name"/>
+        <DatagridHeaderCell>
+            <DatagridHeaderSort
+                Text="Email"
+                Sort="@_sortParam"
+                SortAsc="@AppUserSort.EmailAsc"
+                SortDesc="@AppUserSort.EmailDesc"/>
+        </DatagridHeaderCell>
+        <DatagridHeaderCell Text="Role" Separator="false"/>
     </Header>
     <ItemTemplate>
         <DatagridCell>@context.Name</DatagridCell>
@@ -27,7 +34,7 @@
 @code{
     private readonly AppUserFilter _filter = new AppUserFilter();
 
-    private AppUserSort _sort = default;
+    private readonly SortParam<AppUserSort> _sortParam = new SortParam<AppUserSort>();
 
     private async Task<ListResponse<AppUserVM>> Fetch(Paginate paginate)
     {
@@ -37,7 +44,7 @@
             .StreamAsync<ListResponse<AppUserVM>>(
                 "UserList",
                 _filter,
-                _sort,
+                _sortParam.Value,
                 paginate
             ))
         {
@@ -45,5 +52,7 @@
         }
         return listResponse;
     }
+
+
 
 }
