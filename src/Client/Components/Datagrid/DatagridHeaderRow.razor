@@ -1,0 +1,15 @@
+<div role="rowgroup" class="datagrid-header">
+    <div role="row" class="datagrid-row">
+        <div class="datagrid-row-master datagrid-row-flex">
+            <div class="datagrid-row-scrollable">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

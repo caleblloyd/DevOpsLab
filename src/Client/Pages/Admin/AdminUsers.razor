@@ -1,5 +1,40 @@
 ﻿@page "/admin/users"
 
+@using DevOpsLab.Client.Components.Datagrid
+@using DevOpsLab.Shared.ViewModels
+@using Microsoft.AspNetCore.SignalR.Client
+
 @inherits AdminBase
 
 <h1>Users</h1>
+
+<Datagrid Items="@_appUserVMs" Loading="@_loading">
+    <Header>
+        <DatagridHeaderCell>Name</DatagridHeaderCell>
+        <DatagridHeaderCell>Email</DatagridHeaderCell>
+        <DatagridHeaderCell Separator="false">Role</DatagridHeaderCell>
+    </Header>
+    <ItemTemplate>
+        <DatagridCell>@context.Name</DatagridCell>
+        <DatagridCell>@context.Email</DatagridCell>
+        <DatagridCell>@context.Role</DatagridCell>
+    </ItemTemplate>
+</Datagrid>
+
+@code{
+
+    private IEnumerable<AppUserVM> _appUserVMs = new List<AppUserVM>();
+
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AdminHubClient.WaitConnectedAsync();
+        await foreach (var appUserVMs in AdminHubClient.HubConnection.StreamAsync<IEnumerable<AppUserVM>>("UserList"))
+        {
+            _appUserVMs = appUserVMs;
+        }
+        _loading = false;
+    }
+
+}

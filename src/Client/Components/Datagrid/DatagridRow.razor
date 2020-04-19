@@ -1,0 +1,15 @@
+<clr-dg-row role="rowgroup" class="datagrid-row">
+    <div role="row" class="datagrid-row-master datagrid-row-flex">
+        <div class="datagrid-row-scrollable">
+            <div class="datagrid-scrolling-cells">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</clr-dg-row>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

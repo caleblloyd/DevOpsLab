@@ -1,0 +1,55 @@
+@typeparam TItem
+
+<div class="datagrid-outer-wrapper">
+    <div class="datagrid-inner-wrapper">
+        <div class="datagrid">
+            <div class="datagrid-table-wrapper">
+                <div role="grid" class="datagrid-table">
+                    <DatagridHeaderRow>
+                        @Header
+                    </DatagridHeaderRow>
+                    @if (Loading)
+                    {
+                        <DatagridRow>
+                            <DatagridCell>
+                                Loading...
+                            </DatagridCell>
+                        </DatagridRow>
+                    }
+                    else if (!Items.Any())
+                    {
+                        <DatagridRow>
+                            <DatagridCell>
+                                No Results
+                            </DatagridCell>
+                        </DatagridRow>
+                    }
+                    else
+                    {
+                        foreach (var item in Items)
+                        {
+                            <DatagridRow>
+                                @ItemTemplate(item)
+                            </DatagridRow>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public RenderFragment Header { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; }
+
+    [Parameter]
+    public IEnumerable<TItem> Items { get; set; } = new List<TItem>();
+
+    [Parameter]
+    public bool Loading { get; set; } = false;
+}

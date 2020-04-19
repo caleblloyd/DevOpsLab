@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace DevOpsLab.Client.Services.Hub
 {
     public abstract class HubClient
     {
-        protected HubConnection HubConnection;
+        public HubConnection HubConnection;
         protected readonly NavigationManager NavigationManager;
 
         // workaround https://github.com/dotnet/aspnetcore/pull/20466
@@ -23,6 +24,7 @@ namespace DevOpsLab.Client.Services.Hub
 
         private bool _connected;
         private readonly SemaphoreSlim _connectedSemaphoreSlim = new SemaphoreSlim(1);
+        private readonly List<SemaphoreSlim> _connectedWaitSemaphoreSlims = new List<SemaphoreSlim>();
         private bool _shouldConnect;
         private readonly object _shouldConnectLock = new object();
 
@@ -133,12 +135,47 @@ namespace DevOpsLab.Client.Services.Hub
                         _connected = false;
                     }
                 }
+
+                if (_connected)
+                {
+                    // clear out all waiting semaphores
+                    foreach (var connectedWaitSemaphoreSlim in _connectedWaitSemaphoreSlims)
+                    {
+                        connectedWaitSemaphoreSlim.Release();
+                    }
+
+                    _connectedWaitSemaphoreSlims.Clear();
+                }
             }
             finally
             {
                 // release the semaphore
                 _connectedSemaphoreSlim.Release();
             }
+        }
+
+        public async Task WaitConnectedAsync()
+        {
+            SemaphoreSlim connectedWaitSemaphoreSlim;
+            await _connectedSemaphoreSlim.WaitAsync();
+            try
+            {
+                if (_connected)
+                {
+                    return;
+                }
+
+                connectedWaitSemaphoreSlim = new SemaphoreSlim(1);
+                await connectedWaitSemaphoreSlim.WaitAsync();
+                _connectedWaitSemaphoreSlims.Add(connectedWaitSemaphoreSlim);
+            }
+            finally
+            {
+                // release the semaphore
+                _connectedSemaphoreSlim.Release();
+            }
+
+            await connectedWaitSemaphoreSlim.WaitAsync();
         }
     }
 }

@@ -42,6 +42,9 @@ namespace DevOpsLab.Server.Models
         {
             return model.ViewModel ??= new AppUserVM
             {
+                Name = model.Name,
+                Email = model.UserName,
+                Role = model.Role,
                 TrainingCodeAppUsers = model.TrainingCodeAppUsers
                     .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m)
             };

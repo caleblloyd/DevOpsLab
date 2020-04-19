@@ -1,0 +1,17 @@
+<clr-dg-cell role="gridcell" class="datagrid-cell" style="flex-basis: @FlexBasis">
+    @ChildContent
+</clr-dg-cell>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public int FlexBasisPx { get; set; } = 0;
+
+    [Parameter]
+    public int FlexBasisPct { get; set; } = 10;
+
+    private string FlexBasis => FlexBasisPx > 0 ? $"{FlexBasisPx}px" : $"{FlexBasisPct}%";
+}

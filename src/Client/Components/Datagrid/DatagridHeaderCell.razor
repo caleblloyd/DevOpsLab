@@ -1,0 +1,38 @@
+<clr-dg-column role="columnheader" class="datagrid-column" style="flex-basis: @FlexBasis">
+    <div class="datagrid-column-flex">
+        @if (Text)
+        {
+            <span class="datagrid-column-title">
+                @ChildContent
+            </span>
+        }
+        else
+        {
+            @ChildContent
+        }
+        @if (Separator)
+        {
+            <clr-dg-column-separator class="datagrid-column-separator"/>
+        }
+    </div>
+</clr-dg-column>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Text { get; set; } = true;
+
+    [Parameter]
+    public bool Separator { get; set; } = true;
+
+    [Parameter]
+    public int FlexBasisPx { get; set; } = 0;
+
+    [Parameter]
+    public int FlexBasisPct { get; set; } = 10;
+
+    private string FlexBasis => FlexBasisPx > 0 ? $"{FlexBasisPx}px" : $"{FlexBasisPct}%";
+}
