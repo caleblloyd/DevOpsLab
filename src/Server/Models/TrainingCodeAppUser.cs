@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class TrainingCodeAppUser : BaseModel
+    public class TrainingCodeAppUser : BaseModel, IHasViewModel<TrainingCodeAppUserVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,17 +30,21 @@ namespace DevOpsLab.Server.Models
             });
         }
 
-        private TrainingCodeAppUserVM ViewModel { get; set; }
+        private TrainingCodeAppUserVM _viewModel;
 
-        public static implicit operator TrainingCodeAppUserVM(TrainingCodeAppUser model)
+        [NotMapped]
+        public TrainingCodeAppUserVM ViewModel
         {
-            return model.ViewModel ??= new TrainingCodeAppUserVM
+            get
             {
-                Id = model.Id,
-                TrainingCode = model.TrainingCode,
-                AppUser = model.AppUser,
-                Expires = model.Expires
-            };
+                return _viewModel ??= new TrainingCodeAppUserVM
+                {
+                    Id = Id,
+                    TrainingCode = TrainingCode.ViewModel,
+                    AppUser = AppUser.ViewModel,
+                    Expires = Expires
+                };
+            }
         }
 
         public Guid TrainingCodeId { get; set; }

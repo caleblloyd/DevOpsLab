@@ -1,3 +1,5 @@
+@using DevOpsLab.Shared.Collections
+
 @typeparam TItem
 
 <div class="datagrid-outer-wrapper">
@@ -8,7 +10,7 @@
                     <DatagridHeaderRow>
                         @Header
                     </DatagridHeaderRow>
-                    @if (Loading)
+                    @if (_listResponse == null)
                     {
                         <DatagridRow>
                             <DatagridCell>
@@ -16,7 +18,7 @@
                             </DatagridCell>
                         </DatagridRow>
                     }
-                    else if (!Items.Any())
+                    else if (!_listResponse.Items.Any())
                     {
                         <DatagridRow>
                             <DatagridCell>
@@ -26,7 +28,7 @@
                     }
                     else
                     {
-                        foreach (var item in Items)
+                        foreach (var item in _listResponse.Items)
                         {
                             <DatagridRow>
                                 @ItemTemplate(item)
@@ -36,11 +38,29 @@
                 </div>
             </div>
         </div>
+        @if (_listResponse != null && _paginate != null)
+        {
+            <DatagridFooter
+                ItemCount="@_listResponse.Items.Count()"
+                Loading="@_loading"
+                Paginate="@_paginate"
+                Refresh="@Refresh"
+                Total="@_listResponse.Total"/>
+        }
     </div>
 </div>
 
 @code
 {
+    private ListResponse<TItem> _listResponse;
+
+    private bool _loading = true;
+
+    private Paginate _paginate;
+
+    [Parameter]
+    public Func<Paginate, Task<ListResponse<TItem>>> Fetch { get; set; }
+
     [Parameter]
     public RenderFragment Header { get; set; }
 
@@ -48,8 +68,24 @@
     public RenderFragment<TItem> ItemTemplate { get; set; }
 
     [Parameter]
-    public IEnumerable<TItem> Items { get; set; } = new List<TItem>();
+    public bool Paginate { get; set; } = false;
 
-    [Parameter]
-    public bool Loading { get; set; } = false;
+    protected override async Task OnParametersSetAsync()
+    {
+        _paginate = new Paginate();
+        if (Paginate)
+        {
+            _paginate.Limit = 10;
+        }
+        await Refresh();
+    }
+
+    public async Task Refresh()
+    {
+        _loading = true;
+        StateHasChanged();
+        _listResponse = await Fetch(_paginate);
+        _loading = false;
+        StateHasChanged();
+    }
 }

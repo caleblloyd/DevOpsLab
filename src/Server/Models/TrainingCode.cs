@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
 using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class TrainingCode : BaseModel
+    public class TrainingCode : BaseModel, IHasViewModel<TrainingCodeVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,22 +31,25 @@ namespace DevOpsLab.Server.Models
                 entity.HasIndex(m => m.Code);
             });
         }
-        
-        private TrainingCodeVM ViewModel { get; set; }
 
-        public static implicit operator TrainingCodeVM(TrainingCode model)
+        private TrainingCodeVM _viewModel;
+
+        [NotMapped]
+        public TrainingCodeVM ViewModel
         {
-            return model.ViewModel ??= new TrainingCodeVM
+            get
             {
-                Id = model.Id,
-                Code = model.Code,
-                MaxUsers = model.MaxUsers,
-                ExpiresAfter = model.ExpiresAfter,
-                TrainingCodeAppUsers = model.TrainingCodeAppUsers
-                    .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m),
-                Tracks = model.TrainingCodeTracks
-                    .Select<TrainingCodeTrack, TrackVM>(m => m.Track)
-            };
+                return _viewModel ??= new TrainingCodeVM
+                {
+                    Id = Id,
+                    Code = Code,
+                    MaxUsers = MaxUsers,
+                    ExpiresAfter = ExpiresAfter,
+                    TrainingCodeAppUsers = TrainingCodeAppUsers.Select(m => m.ViewModel),
+                    Tracks = TrainingCodeTracks.Select(m => m.Track.ViewModel)
+                };
+            }
+            
         }
 
         [Required] public string Code { get; set; }

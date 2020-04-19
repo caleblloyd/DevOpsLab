@@ -1,0 +1,126 @@
+@using DevOpsLab.Shared.Collections
+
+<clr-dg-footer class="datagrid-footer">
+    @if (Paginate.Limit == 0)
+    {
+        <div class="datagrid-footer-description">@Total items</div>
+    }
+    else
+    {
+        <div class="datagrid-footer-description"/>
+        <clr-dg-pagination class="pagination">
+            <div class="pagination-size">
+                <clr-dg-page-size>
+                    Items per page
+                    <div class="clr-select-wrapper">
+                        <select class="clr-page-size-select" @onchange="LimitChange" disabled="@Loading">
+                            <option value="10" selected="@(Paginate.Limit == 10)">10</option>
+                            <option value="20" selected="@(Paginate.Limit == 25)">25</option>
+                            <option value="50" selected="@(Paginate.Limit == 50)">50</option>
+                            <option value="100" selected="@(Paginate.Limit == 100)">100</option>
+                        </select>
+                    </div>
+                </clr-dg-page-size>
+            </div>
+            <div class="pagination-description">@Start - @Stop of @Total items</div>
+            <div class="pagination-list">
+                <button
+                    type="button"
+                    class="pagination-first"
+                    aria-label="First Page"
+                    @onclick="@(() => PageChangeNumber(1))"
+                    disabled="@(Loading || Page == 1)">
+                    <clr-icon shape="step-forward-2 down" role="none"/>
+                </button>
+                <button
+                    type="button"
+                    class="pagination-previous"
+                    aria-label="Previous Page"
+                    @onclick="@(() => PageChangeNumber(Page - 1))"
+                    disabled="@(Loading || Page == 1)">
+                    <clr-icon shape="angle left" role="none"/>
+                </button>
+                <input
+                    type="text"
+                    class="pagination-current clr-input"
+                    size="2"
+                    aria-label="Current Page"
+                    value="@Page"
+                    @onchange="PageChange"
+                    disabled="@Loading">
+                /
+                <span aria-label="Total Pages">@Pages</span>
+                <button
+                    type="button"
+                    class="pagination-next"
+                    aria-label="Next Page"
+                    @onclick="@(() => PageChangeNumber(Page + 1))"
+                    disabled="@(Loading || Page == Pages)">
+                    <clr-icon shape="angle right" role="none"/>
+                </button>
+                <button
+                    type="button"
+                    class="pagination-last"
+                    aria-label="Last Page"
+                    @onclick="@(() => PageChangeNumber(Pages))"
+                    disabled="@(Loading || Page == Pages)">
+                    <clr-icon shape="step-forward-2 up" role="none"/>
+                </button>
+            </div>
+        </clr-dg-pagination>
+    }
+</clr-dg-footer>
+
+@code{
+
+    [Parameter]
+    public int ItemCount { get; set; }
+
+    [Parameter]
+    public bool Loading { get; set; }
+
+    [Parameter]
+    public Paginate Paginate { get; set; }
+
+    [Parameter]
+    public Func<Task> Refresh { get; set; }
+
+    [Parameter]
+    public int Total { get; set; }
+
+    private int Start => Total > 0 ? Paginate.Offset + 1 : 0;
+
+    private int Stop => Total > 0 ? Paginate.Offset + ItemCount : 0;
+
+    private int Page => Paginate.Limit > 0
+        ? Convert.ToInt32(Math.Ceiling((double) Math.Max(Start, 1) / Paginate.Limit))
+        : 1;
+
+    private int Pages => Paginate.Limit > 0
+        ? Convert.ToInt32(Math.Ceiling((double) Math.Max(Total, 1) / Paginate.Limit))
+        : 1;
+
+    private async Task LimitChange(ChangeEventArgs eventArgs)
+    {
+        Paginate.Limit = Convert.ToInt32(eventArgs.Value);
+        Paginate.Offset = Paginate.Offset / Paginate.Limit * Paginate.Limit;
+        await Refresh();
+    }
+
+    private async Task PageChange(ChangeEventArgs eventArgs)
+    {
+        var page = Convert.ToInt32(eventArgs.Value);
+        await PageChangeNumber(page);
+    }
+
+    private async Task PageChangeNumber(int page)
+    {
+        if (page > Pages)
+        {
+            page = Pages;
+        }
+        Paginate.Offset = (page - 1) * Paginate.Limit;
+        await Refresh();
+    }
+
+}

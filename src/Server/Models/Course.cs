@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
 using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class Course : BaseModel
+    public class Course : BaseModel, IHasViewModel<CourseVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,21 +30,23 @@ namespace DevOpsLab.Server.Models
             });
         }
 
-        private CourseVM ViewModel { get; set; }
+        private CourseVM _viewModel;
 
-        public static implicit operator CourseVM(Course model)
+        [NotMapped]
+        public CourseVM ViewModel
         {
-            return model.ViewModel ??= new CourseVM
+            get
             {
-                Id = model.Id,
-                Name = model.Name,
-                Alias = model.Alias,
-                Description = model.Description,
-                Scenarios = model.Scenarios
-                    .Select<Scenario, ScenarioVM>(m => m),
-                Tracks = model.TrackCourses
-                    .Select<TrackCourse, TrackVM>(m => m.Track)
-            };
+                return _viewModel ??= new CourseVM
+                {
+                    Id = Id,
+                    Name = Name,
+                    Alias = Alias,
+                    Description = Description,
+                    Scenarios = Scenarios.Select(m => m.ViewModel),
+                    Tracks = TrackCourses.Select(m => m.Track.ViewModel)
+                };
+            }
         }
 
         [Required] public string Name { get; set; }

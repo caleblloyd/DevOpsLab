@@ -1,6 +1,9 @@
 ﻿@page "/admin/users"
 
 @using DevOpsLab.Client.Components.Datagrid
+@using DevOpsLab.Shared.Collections
+@using DevOpsLab.Shared.Filter
+@using DevOpsLab.Shared.Sort
 @using DevOpsLab.Shared.ViewModels
 @using Microsoft.AspNetCore.SignalR.Client
 
@@ -8,7 +11,7 @@
 
 <h1>Users</h1>
 
-<Datagrid Items="@_appUserVMs" Loading="@_loading">
+<Datagrid Fetch="@Fetch" Paginate="true">
     <Header>
         <DatagridHeaderCell>Name</DatagridHeaderCell>
         <DatagridHeaderCell>Email</DatagridHeaderCell>
@@ -22,19 +25,25 @@
 </Datagrid>
 
 @code{
+    private readonly AppUserFilter _filter = new AppUserFilter();
 
-    private IEnumerable<AppUserVM> _appUserVMs = new List<AppUserVM>();
+    private AppUserSort _sort = default;
 
-    private bool _loading = true;
-
-    protected override async Task OnInitializedAsync()
+    private async Task<ListResponse<AppUserVM>> Fetch(Paginate paginate)
     {
         await AdminHubClient.WaitConnectedAsync();
-        await foreach (var appUserVMs in AdminHubClient.HubConnection.StreamAsync<IEnumerable<AppUserVM>>("UserList"))
+        ListResponse<AppUserVM> listResponse = null;
+        await foreach (var response in AdminHubClient.HubConnection
+            .StreamAsync<ListResponse<AppUserVM>>(
+                "UserList",
+                _filter,
+                _sort,
+                paginate
+            ))
         {
-            _appUserVMs = appUserVMs;
+            listResponse = response;
         }
-        _loading = false;
+        return listResponse;
     }
 
 }

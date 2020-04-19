@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared;
 using DevOpsLab.Shared.ViewModels;
 using IdentityModel;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class AppUser : IdentityUser
+    public class AppUser : IdentityUser, IHasViewModel<AppUserVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,18 +38,21 @@ namespace DevOpsLab.Server.Models
             });
         }
 
-        private AppUserVM ViewModel { get; set; }
+        private AppUserVM _viewModel;
 
-        public static implicit operator AppUserVM(AppUser model)
+        [NotMapped]
+        public AppUserVM ViewModel
         {
-            return model.ViewModel ??= new AppUserVM
+            get
             {
-                Name = model.Name,
-                Email = model.UserName,
-                Role = model.Role,
-                TrainingCodeAppUsers = model.TrainingCodeAppUsers
-                    .Select<TrainingCodeAppUser, TrainingCodeAppUserVM>(m => m)
-            };
+                return _viewModel ??= new AppUserVM
+                {
+                    Name = Name,
+                    Email = UserName,
+                    Role = Role,
+                    TrainingCodeAppUsers = TrainingCodeAppUsers.Select(m => m.ViewModel)
+                };
+            }
         }
 
         [NotMapped] public string Name => UserClaims.FirstOrDefault(m => m.ClaimType == JwtClaimTypes.Name)?.ClaimValue;

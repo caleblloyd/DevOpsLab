@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
 using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class Track : BaseRankedModel
+    public class Track : BaseRankedModel, IHasViewModel<TrackVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,20 +30,22 @@ namespace DevOpsLab.Server.Models
             });
         }
 
-        private TrackVM ViewModel { get; set; }
+        private TrackVM _viewModel;
 
-        public static implicit operator TrackVM(Track model)
+        [NotMapped]
+        public TrackVM ViewModel
         {
-            return model.ViewModel ??= new TrackVM
+            get
             {
-                Id = model.Id,
-                Name = model.Name,
-                Alias = model.Alias,
-                Courses = model.TrackCourses
-                    .Select<TrackCourse, CourseVM>(m => m.Course),
-                TrainingCodes = model.TrainingCodeTracks
-                    .Select<TrainingCodeTrack, TrainingCodeVM>(m => m.TrainingCode)
-            };
+                return _viewModel ??= new TrackVM
+                {
+                    Id = Id,
+                    Name = Name,
+                    Alias = Alias,
+                    Courses = TrackCourses.Select(m => m.Course.ViewModel),
+                    TrainingCodes = TrainingCodeTracks.Select(m => m.TrainingCode.ViewModel)
+                };
+            }
         }
 
         [Required] public string Name { get; set; }

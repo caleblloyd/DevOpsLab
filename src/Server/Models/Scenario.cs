@@ -1,14 +1,16 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using DevOpsLab.Server.Models.BaseModels;
 using DevOpsLab.Server.Models.Collections;
+using DevOpsLab.Server.Models.Interfaces;
 using DevOpsLab.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DevOpsLab.Server.Models
 {
-    public class Scenario : BaseRankedModel
+    public class Scenario : BaseRankedModel, IHasViewModel<ScenarioVM>
     {
         public static void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,21 +25,24 @@ namespace DevOpsLab.Server.Models
                 entity.HasIndex(m => m.Alias);
             });
         }
-        
-        private ScenarioVM ViewModel { get; set; }
 
-        public static implicit operator ScenarioVM(Scenario model)
+        private ScenarioVM _viewModel;
+
+        [NotMapped]
+        public ScenarioVM ViewModel
         {
-            return model.ViewModel ??= new ScenarioVM
+            get
             {
-                Id = model.Id,
-                Name = model.Name,
-                Alias = model.Alias,
-                Description = model.Description,
-                Course = model.Course,
-                Steps = model.Steps
-                    .Select<Step, StepVM>(m => m)
-            };
+                return _viewModel ??= new ScenarioVM
+                {
+                    Id = Id,
+                    Name = Name,
+                    Alias = Alias,
+                    Description = Description,
+                    Course = Course.ViewModel,
+                    Steps = Steps.Select(m => m.ViewModel)
+                };
+            }
         }
 
         [Required] public string Name { get; set; }
