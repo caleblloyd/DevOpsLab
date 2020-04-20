@@ -8,15 +8,21 @@
         <clr-dg-filter>
             <button
                 type="button"
-                class="datagrid-filter-toggle clr-anchor @(_dropdownContainer.IsOpen ? "datagrid-filter-open" : "")"
+                class="datagrid-filter-toggle clr-anchor @(_dropdownContainer.IsOpen ? "datagrid-filter-open" : "") @(_hasValue ? "datagrid-filtered" : "")"
                 aria-label="Toggle column filter"
                 @onclick="_dropdownContainer.DropdownToggle">
-                <clr-icon class="is-solid" shape="filter-grid" role="none"/>
+                <clr-icon class="is-solid" shape="@FilterIconShape" role="none"/>
             </button>
         </clr-dg-filter>
         <div class="datagrid-filter dropdown-menu">
             <div class="datagrid-filter-close-wrapper">
-                <button type="button" class="close clr-smart-close-button" @onclick="_dropdownContainer.DropdownClose">
+                @if (_hasValue)
+                {
+                    <button type="button" class="close" @onclick="ClearClick">
+                        <clr-icon shape="ban" role="none" title="Clear"/>
+                    </button>
+                }
+                <button type="button" class="close" @onclick="_dropdownContainer.DropdownClose">
                     <clr-icon shape="close" role="none" title="Close"/>
                 </button>
             </div>
@@ -35,6 +41,8 @@
 {
     private DropdownContainer _dropdownContainer;
 
+    private bool _hasValue;
+
     private readonly string _inputId = ElementHelper.NewId();
 
     [CascadingParameter(Name = "Loading")]
@@ -46,17 +54,29 @@
     [CascadingParameter(Name = "Refresh")]
     public Func<Task> Refresh { get; set; }
 
+    private string FilterIconShape => _hasValue ? "filter-grid-circle" : "filter-grid";
+
     private async Task AfterOpenAsync()
     {
-        await JsRuntime.InvokeVoidAsync(
-            "helpers.focus",
-            $"#{_inputId}");
+        await JsRuntime.InvokeVoidAsync("helpers.focus", $"#{_inputId}");
+    }
+
+    private async Task ClearClick()
+    {
+        await JsRuntime.InvokeVoidAsync("helpers.inputClear", $"#{_inputId}");
+        await _dropdownContainer.DropdownClose();
+        await SetValue(null);
     }
 
     private async Task InputChange(ChangeEventArgs eventArgs)
     {
-        var value = (string) eventArgs.Value;
-        OnChange(string.IsNullOrEmpty(value) ? null : value);
+        await SetValue((string) eventArgs.Value);
+    }
+
+    private async Task SetValue(string value)
+    {
+        _hasValue = !string.IsNullOrEmpty(value);
+        OnChange(_hasValue ? value : null);
         await Refresh();
     }
 

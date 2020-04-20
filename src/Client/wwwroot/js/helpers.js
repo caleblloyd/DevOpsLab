@@ -29,6 +29,10 @@ function initHelpers() {
   helpers.focus = function (selector) {
     $(selector).focus();
   }
+  
+  helpers.inputClear = function (selector) {
+    $(selector).val("");
+  }
 
   return helpers;
 }

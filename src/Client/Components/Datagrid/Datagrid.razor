@@ -4,51 +4,56 @@
 
 <CascadingValue TValue="Func<Task>" Name="Refresh" Value="@Refresh">
     <CascadingValue Name="Loading" Value="@Loading">
-        <div class="datagrid-outer-wrapper">
-            <div class="datagrid-inner-wrapper">
-                <div class="datagrid">
-                    <div class="datagrid-table-wrapper">
-                        <div role="grid" class="datagrid-table">
-                            <DatagridHeaderRow>
-                                @Header
-                            </DatagridHeaderRow>
-                            @if (_listResponse == null)
-                            {
-                                <DatagridRow>
-                                    <DatagridCell>
-                                        Loading...
-                                    </DatagridCell>
-                                </DatagridRow>
-                            }
-                            else if (!_listResponse.Items.Any())
-                            {
-                                <DatagridRow>
-                                    <DatagridCell>
-                                        No Results
-                                    </DatagridCell>
-                                </DatagridRow>
-                            }
-                            else
-                            {
-                                foreach (var item in _listResponse.Items)
+        <clr-datagrid class="datagrid-host" style="@StyleHeight">
+            <div class="datagrid-outer-wrapper">
+                <div class="datagrid-inner-wrapper">
+                    <div class="datagrid">
+                        <div class="datagrid-table-wrapper">
+                            <div role="grid" class="datagrid-table">
+                                <DatagridHeaderRow>
+                                    @Header
+                                </DatagridHeaderRow>
+                                @if (_listResponse == null)
                                 {
                                     <DatagridRow>
-                                        @ItemTemplate(item)
+                                        <DatagridCell>
+                                            Loading...
+                                        </DatagridCell>
                                     </DatagridRow>
                                 }
-                            }
+                                else if (!_listResponse.Items.Any())
+                                {
+                                    <DatagridRow>
+                                        <DatagridCell>
+                                            No Results
+                                        </DatagridCell>
+                                    </DatagridRow>
+                                }
+                                else
+                                {
+                                    foreach (var item in _listResponse.Items)
+                                    {
+                                        <DatagridRow>
+                                            @ItemTemplate(item)
+                                        </DatagridRow>
+                                    }
+                                }
+                                <clr-dg-placeholder class="datagrid-placeholder-container">
+                                    <div class="datagrid-placeholder"/>
+                                </clr-dg-placeholder>
+                            </div>
                         </div>
                     </div>
+                    @if (_listResponse != null && _paginate != null)
+                    {
+                        <DatagridFooter
+                            ItemCount="@_listResponse.Items.Count()"
+                            Paginate="@_paginate"
+                            Total="@_listResponse.Total"/>
+                    }
                 </div>
-                @if (_listResponse != null && _paginate != null)
-                {
-                    <DatagridFooter
-                        ItemCount="@_listResponse.Items.Count()"
-                        Paginate="@_paginate"
-                        Total="@_listResponse.Total"/>
-                }
             </div>
-        </div>
+        </clr-datagrid>
     </CascadingValue>
 </CascadingValue>
 
@@ -71,6 +76,9 @@
 
     [Parameter]
     public bool Paginate { get; set; } = false;
+
+    [Parameter]
+    public string StyleHeight { get; set; } = "min-height: 240px";
 
     protected override async Task OnParametersSetAsync()
     {
