@@ -10,32 +10,52 @@
                     <div class="datagrid">
                         <div class="datagrid-table-wrapper">
                             <div role="grid" class="datagrid-table">
-                                <DatagridHeaderRow>
-                                    @Header
+                                <DatagridHeaderRow HasActions="@(RowActionsTemplate != default)">
+                                    @HeaderCells
                                 </DatagridHeaderRow>
                                 @if (_listResponse == null)
                                 {
                                     <DatagridRow>
-                                        <DatagridCell>
-                                            Loading...
-                                        </DatagridCell>
+                                        <Cells>
+                                            <DatagridCell>
+                                                Loading...
+                                            </DatagridCell>
+                                        </Cells>
                                     </DatagridRow>
                                 }
                                 else if (!_listResponse.Items.Any())
                                 {
                                     <DatagridRow>
-                                        <DatagridCell>
-                                            No Results
-                                        </DatagridCell>
+                                        <Cells>
+                                            <DatagridCell>
+                                                No Results
+                                            </DatagridCell>
+                                        </Cells>
                                     </DatagridRow>
                                 }
                                 else
                                 {
                                     foreach (var item in _listResponse.Items)
                                     {
-                                        <DatagridRow>
-                                            @ItemTemplate(item)
-                                        </DatagridRow>
+                                        if (RowActionsTemplate != default)
+                                        {
+                                            <DatagridRow>
+                                                <Actions>
+                                                    @RowActionsTemplate(item)
+                                                </Actions>
+                                                <Cells>
+                                                    @RowCellsTemplate(item)
+                                                </Cells>
+                                            </DatagridRow>
+                                        }
+                                        else
+                                        {
+                                            <DatagridRow>
+                                                <Cells>
+                                                    @RowCellsTemplate(item)
+                                                </Cells>
+                                            </DatagridRow>
+                                        }
                                     }
                                 }
                                 <clr-dg-placeholder class="datagrid-placeholder-container">
@@ -66,13 +86,16 @@
     private Paginate _paginate;
 
     [Parameter]
-    public Func<Paginate, Task<ListResponse<TItem>>> Fetch { get; set; }
+    public Func<Paginate, Task<ListResponse<TItem>>> FetchAsync { get; set; }
 
     [Parameter]
-    public RenderFragment Header { get; set; }
+    public RenderFragment HeaderCells { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> ItemTemplate { get; set; }
+    public RenderFragment<TItem> RowActionsTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> RowCellsTemplate { get; set; }
 
     [Parameter]
     public bool Paginate { get; set; } = false;
@@ -94,7 +117,7 @@
     {
         Loading = true;
         StateHasChanged();
-        _listResponse = await Fetch(_paginate);
+        _listResponse = await FetchAsync(_paginate);
         Loading = false;
         StateHasChanged();
     }

@@ -12,8 +12,8 @@
 
 <h1>Users</h1>
 
-<Datagrid Fetch="@Fetch" Paginate="true">
-    <Header>
+<Datagrid FetchAsync="@FetchAsync" Paginate="true">
+    <HeaderCells>
         <DatagridHeaderCell Text="Name"/>
         <DatagridHeaderCell>
             <DatagridHeaderSort
@@ -25,12 +25,13 @@
                 OnChange="@(value => _filter.Email = value)"/>
         </DatagridHeaderCell>
         <DatagridHeaderCell Text="Role" Separator="false"/>
-    </Header>
-    <ItemTemplate>
+    </HeaderCells>
+    <RowActionsTemplate/>
+    <RowCellsTemplate>
         <DatagridCell>@context.Name</DatagridCell>
         <DatagridCell>@context.Email</DatagridCell>
         <DatagridCell>@context.Role</DatagridCell>
-    </ItemTemplate>
+    </RowCellsTemplate>
 </Datagrid>
 
 @code{
@@ -38,7 +39,7 @@
 
     private readonly SortParam<AppUserSort> _sortParam = new SortParam<AppUserSort>();
 
-    private async Task<ListResponse<AppUserVM>> Fetch(Paginate paginate)
+    private async Task<ListResponse<AppUserVM>> FetchAsync(Paginate paginate)
     {
         await AdminHubClient.WaitConnectedAsync();
         ListResponse<AppUserVM> listResponse = null;

@@ -1,6 +1,14 @@
 <div role="rowgroup" class="datagrid-header">
     <div role="row" class="datagrid-row">
         <div class="datagrid-row-master datagrid-row-flex">
+            @if (HasActions)
+            {
+                <div class="datagrid-row-sticky">
+                    <div role="columnheader" class="datagrid-column datagrid-row-actions datagrid-fixed-column" aria-label="Actions">
+                        <div class="datagrid-column-separator"/>
+                    </div>
+                </div>
+            }
             <div class="datagrid-row-scrollable">
                 @ChildContent
             </div>
@@ -12,4 +20,7 @@
 {
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool HasActions { get; set; }
 }
