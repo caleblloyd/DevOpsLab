@@ -1,12 +1,12 @@
 ﻿@page "/admin/users"
 
+@using DevOpsLab.Client.Components
 @using DevOpsLab.Client.Components.Datagrid
 @using DevOpsLab.Shared.Collections
 @using DevOpsLab.Shared.Filter
 @using DevOpsLab.Shared.Sort
 @using DevOpsLab.Shared.ViewModels
 @using Microsoft.AspNetCore.SignalR.Client
-@using DevOpsLab.Client.Components
 
 @inherits AdminBase
 
@@ -27,6 +27,10 @@
         <DatagridHeaderCell Text="Role" Separator="false"/>
     </HeaderCells>
     <RowActionsTemplate/>
+    <RowActionsTemplate>
+        <DropdownLink Action="@(() => Console.WriteLine("Edit"))">Edit</DropdownLink>
+        <DropdownLink Action="@(() => Console.WriteLine("Delete"))">Delete</DropdownLink>
+    </RowActionsTemplate>
     <RowCellsTemplate>
         <DatagridCell>@context.Name</DatagridCell>
         <DatagridCell>@context.Email</DatagridCell>

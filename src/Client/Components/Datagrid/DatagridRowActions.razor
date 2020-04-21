@@ -1,0 +1,26 @@
+@using DevOpsLab.Client.Components
+
+<DropdownContainer @ref="_dropdownContainer">
+    <div id="@_dropdownContainer.Id" class="dropdown right-bottom @_dropdownContainer.DropdownOpenClass">
+        <button
+            type="button"
+            role="button"
+            aria-haspopup="true"
+            class="datagrid-action-toggle clr-anchor"
+            aria-label="Actions"
+            @onclick="_dropdownContainer.DropdownToggle">
+            <clr-icon shape="ellipsis-vertical" title="Actions" role="none"/>
+        </button>
+        <div class="dropdown-menu" style="margin-left: 10px;">
+            @ChildContent
+        </div>
+    </div>
+</DropdownContainer>
+
+@code
+{
+    private DropdownContainer _dropdownContainer;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

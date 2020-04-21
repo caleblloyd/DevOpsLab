@@ -1,0 +1,46 @@
+@using DevOpsLab.Client.Components
+
+<a class="@Class" href="@Href" @onclick="Click" style="@Style">
+    @ChildContent
+</a>
+
+@code
+{
+
+    [Parameter]
+    public Action Action { get; set; }
+
+    [Parameter]
+    public Func<Task> ActionAsync { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "dropdown-item";
+
+    [CascadingParameter]
+    public DropdownContainer DropdownContainer { get; set; }
+
+    [Parameter]
+    public string Href { get; set; } = "javascript://";
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    private async Task Click()
+    {
+        if (Action != default)
+        {
+            Action();
+        }
+        else if (ActionAsync != default)
+        {
+            await ActionAsync();
+        }
+        await DropdownContainer.DropdownClose();
+    }
+}
