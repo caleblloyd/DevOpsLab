@@ -1,0 +1,141 @@
+<Modal @ref="_modal" Size="@Size">
+    <Header>
+        <button aria-label="Close" class="close" type="button" @onclick="CancelAsync">
+            <clr-icon aria-hidden="true" shape="close"/>
+        </button>
+        <h3 class="modal-title">@HeaderText</h3>
+    </Header>
+    <Body>
+    @ChildContent
+    </Body>
+    <Footer>
+        <button class="btn @CancelButtonClass" type="button" @onclick="CancelAsync">@CancelButtonText</button>
+        <button class="btn @SubmitButtonClass" type="button" @onclick="SubmitAsync">@SubmitButtonText</button>
+    </Footer>
+</Modal>
+
+@code {
+
+    private Modal _modal;
+
+    [Parameter]
+    public virtual string CancelButtonClass { get; set; } = "btn-outline";
+
+    [Parameter]
+    public virtual string CancelButtonText { get; set; } = "Cancel";
+
+    [Parameter]
+    public virtual string SubmitButtonClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public virtual string SubmitButtonText { get; set; } = "Save";
+
+    [Parameter]
+    public string HeaderText { get; set; }
+
+    [Parameter]
+    public ModalSize Size { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Action BeforeCancel { get; set; }
+
+    [Parameter]
+    public Func<Task> BeforeCancelAsync { get; set; }
+
+    [Parameter]
+    public Action BeforeOpen { get; set; }
+
+    [Parameter]
+    public Func<Task> BeforeOpenAsync { get; set; }
+
+    [Parameter]
+    public Action BeforeSubmit { get; set; }
+
+    [Parameter]
+    public Func<Task> BeforeSubmitAsync { get; set; }
+
+    [Parameter]
+    public Action AfterCancel { get; set; }
+
+    [Parameter]
+    public Func<Task> AfterCancelAsync { get; set; }
+
+    [Parameter]
+    public Action AfterOpen { get; set; }
+
+    [Parameter]
+    public Func<Task> AfterOpenAsync { get; set; }
+
+    [Parameter]
+    public Action AfterSubmit { get; set; }
+
+    [Parameter]
+    public Func<Task> AfterSubmitAsync { get; set; }
+
+    public async Task CancelAsync()
+    {
+        if (BeforeCancel != default)
+        {
+            BeforeCancel();
+        }
+        else if (BeforeCancelAsync != default)
+        {
+            await BeforeCancelAsync();
+        }
+        _modal.Close();
+        if (AfterCancel != default)
+        {
+            AfterCancel();
+        }
+        else if (AfterCancelAsync != default)
+        {
+            await AfterCancelAsync();
+        }
+    }
+
+    public async Task OpenAsync()
+    {
+        if (BeforeOpen != default)
+        {
+            BeforeOpen();
+        }
+        else if (BeforeOpenAsync != default)
+        {
+            await BeforeOpenAsync();
+        }
+        _modal.Open();
+        if (AfterOpen != default)
+        {
+            AfterOpen();
+        }
+        else if (AfterOpenAsync != default)
+        {
+            await AfterOpenAsync();
+        }
+    }
+
+    public async Task SubmitAsync()
+    {
+        if (BeforeSubmit != default)
+        {
+            BeforeSubmit();
+        }
+        else if (BeforeSubmitAsync != default)
+        {
+            await BeforeSubmitAsync();
+        }
+        _modal.Close();
+        if (AfterSubmit != default)
+        {
+            AfterSubmit();
+        }
+        else if (AfterSubmitAsync != default)
+        {
+            await AfterSubmitAsync();
+        }
+    }
+
+}

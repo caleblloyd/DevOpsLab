@@ -2,6 +2,7 @@
 
 @using DevOpsLab.Client.Components
 @using DevOpsLab.Client.Components.Datagrid
+@using DevOpsLab.Client.Components.Modal
 @using DevOpsLab.Shared.Collections
 @using DevOpsLab.Shared.Filter
 @using DevOpsLab.Shared.Sort
@@ -12,7 +13,7 @@
 
 <h1>Users</h1>
 
-<Datagrid FetchAsync="@FetchAsync" Paginate="true">
+<Datagrid @ref="_datagrid" FetchAsync="@FetchAsync" Paginate="true">
     <HeaderCells>
         <DatagridHeaderCell Text="Name"/>
         <DatagridHeaderCell>
@@ -28,8 +29,8 @@
     </HeaderCells>
     <RowActionsTemplate/>
     <RowActionsTemplate>
-        <DropdownLink Action="@(() => Console.WriteLine("Edit"))">Edit</DropdownLink>
-        <DropdownLink Action="@(() => Console.WriteLine("Delete"))">Delete</DropdownLink>
+        <DropdownLink ActionAsync="@(() => EditOpenAsync(context))">Edit</DropdownLink>
+        <DropdownLink ActionAsync="@(() => DeleteOpenAsync(context))">Delete</DropdownLink>
     </RowActionsTemplate>
     <RowCellsTemplate>
         <DatagridCell>@context.Name</DatagridCell>
@@ -38,7 +39,38 @@
     </RowCellsTemplate>
 </Datagrid>
 
+<ModalForm
+    @ref="_modalAddEdit"
+     HeaderText="@(_add ? "Add User" : "Edit User")"
+     Size="@ModalSize.Large"
+     AfterCancel="@AfterCancel"
+     BeforeSubmitAsync="@(() => _add ? AddAsync() : EditAsync())"
+     AfterSubmitAsync="@AfterSubmitAsync">
+    <p>Form</p>
+</ModalForm>
+
+<ModalForm
+    @ref="_modalDelete"
+     HeaderText="Delete User"
+     SubmitButtonClass="btn-danger"
+     SubmitButtonText="Delete"
+     AfterCancel="@AfterCancel"
+     BeforeSubmitAsync="@DeleteAsync"
+     AfterSubmitAsync="@AfterSubmitAsync">
+    <p>Delete user <strong>@_activeModel.Email</strong>?</p>
+</ModalForm>
+
 @code{
+    private bool _add;
+
+    private AppUserVM _activeModel;
+
+    private Datagrid<AppUserVM> _datagrid;
+
+    private ModalForm _modalAddEdit;
+
+    private ModalForm _modalDelete;
+
     private readonly AppUserFilter _filter = new AppUserFilter();
 
     private readonly SortParam<AppUserSort> _sortParam = new SortParam<AppUserSort>();
@@ -58,6 +90,61 @@
             listResponse = response;
         }
         return listResponse;
+    }
+
+    private async Task AddOpenAsync()
+    {
+        _add = true;
+        _activeModel = new AppUserVM();
+        await _modalAddEdit.OpenAsync();
+    }
+
+    private Task AddAsync()
+    {
+        Console.WriteLine("add");
+        return Task.CompletedTask;
+    }
+
+    private async Task EditOpenAsync(AppUserVM context)
+    {
+        _add = false;
+        _activeModel = context;
+        await _modalAddEdit.OpenAsync();
+    }
+
+    private Task EditAsync()
+    {
+        Console.WriteLine($"edit {_activeModel.Email}");
+        return Task.CompletedTask;
+    }
+
+    private async Task DeleteOpenAsync(AppUserVM context)
+    {
+        _activeModel = context;
+        await _modalDelete.OpenAsync();
+    }
+
+    private Task DeleteAsync()
+    {
+        Console.WriteLine($"delete {_activeModel.Email}");
+        return Task.CompletedTask;
+    }
+
+    private void AfterCancel()
+    {
+        ResetDefaults();
+    }
+
+    private async Task AfterSubmitAsync()
+    {
+        ResetDefaults();
+        await _datagrid.Refresh();
+    }
+
+    private void ResetDefaults()
+    {
+        _add = false;
+        _activeModel = default;
     }
 
 }

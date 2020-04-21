@@ -11,7 +11,7 @@
             @onclick="_dropdownContainer.DropdownToggle">
             <clr-icon shape="ellipsis-vertical" title="Actions" role="none"/>
         </button>
-        <div class="dropdown-menu" style="margin-left: 10px;">
+        <div class="dropdown-menu" style="margin-left: 10px; @StyleDisplay">
             @ChildContent
         </div>
     </div>
@@ -23,4 +23,6 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    private string StyleDisplay => _dropdownContainer.IsOpen ? "" : "display: none";
 }
