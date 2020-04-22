@@ -3,6 +3,10 @@ namespace DevOpsLab.Shared.Sort
     public enum AppUserSort
     {
         EmailAsc,
-        EmailDesc
+        EmailDesc,
+        NameAsc,
+        NameDesc,
+        RoleAsc,
+        RoleDesc
     }
 }

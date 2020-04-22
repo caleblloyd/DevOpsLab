@@ -24,10 +24,38 @@ namespace DevOpsLab.Server.Hubs.Admin
         {
             yield return await HubHelper.WrapAsync(_logger, async () =>
             {
-                IQueryable<AppUser> query = _db.Users
-                    .Include(m => m.UserClaims)
-                    .Include(m => m.UserRoles)
-                    .ThenInclude(m => m.Role);
+                IQueryable<AppUser> query = _db.Users;
+
+                if (!string.IsNullOrEmpty(filter.Email))
+                {
+                    query = query.Where(m => EF.Functions.ILike(m.Email, $"%{filter.Email}%"));
+                }
+
+                if (!string.IsNullOrEmpty(filter.Name))
+                {
+                    query = query.Include(m => m.UserClaims.Where(
+                        uc => uc.ClaimType == JwtClaimTypes.Name
+                              && EF.Functions.ILike(uc.ClaimValue, $"%{filter.Name}%")));
+                }
+                else
+                {
+                    query = query.Include(m => m.UserClaims.Where(
+                        uc => uc.ClaimType == JwtClaimTypes.Name));
+                }
+
+                if (!string.IsNullOrEmpty(filter.Role))
+                {
+                    query = query
+                        .Include(m => m.UserRoles.Where(
+                            ur => EF.Functions.ILike(ur.Role.Name, $"%{filter.Role}%")))
+                        .ThenInclude(m => m.Role);
+                }
+                else
+                {
+                    query = query
+                        .Include(m => m.UserRoles)
+                        .ThenInclude(m => m.Role);
+                }
 
                 switch (sort)
                 {
@@ -37,11 +65,18 @@ namespace DevOpsLab.Server.Hubs.Admin
                     case AppUserSort.EmailDesc:
                         query = query.OrderByDescending(m => m.Email);
                         break;
-                }
-
-                if (!string.IsNullOrEmpty(filter.Email))
-                {
-                    query = query.Where(m => EF.Functions.ILike(m.Email, $"%{filter.Email}%"));
+                    case AppUserSort.NameAsc:
+                        query = query.OrderBy(m => m.UserClaims.OrderBy(uc => uc.ClaimValue));
+                        break;
+                    case AppUserSort.NameDesc:
+                        query = query.OrderByDescending(m => m.UserClaims.OrderByDescending(uc => uc.ClaimValue));
+                        break;
+                    case AppUserSort.RoleAsc:
+                        query = query.OrderBy(m => m.UserRoles.OrderBy(ur => ur.Role.Name));
+                        break;
+                    case AppUserSort.RoleDesc:
+                        query = query.OrderByDescending(m => m.UserRoles.OrderByDescending(ur => ur.Role.Name));
+                        break;
                 }
 
                 return await PaginationHelper.FromQueryAsync<AppUser, AppUserVM>(paginate, query);

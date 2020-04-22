@@ -16,7 +16,15 @@
 
 <Datagrid @ref="_datagrid" FetchAsync="@FetchAsync" Paginate="true">
     <HeaderCells>
-        <DatagridHeaderCell Text="Name"/>
+        <DatagridHeaderCell>
+            <DatagridHeaderSort
+                Text="Name"
+                SortParam="@_sortParam"
+                SortAsc="@AppUserSort.NameAsc"
+                SortDesc="@AppUserSort.NameDesc"/>
+            <DatagridHeaderFilterString
+                OnChange="@(value => _filter.Name = value)"/>
+        </DatagridHeaderCell>
         <DatagridHeaderCell>
             <DatagridHeaderSort
                 Text="Email"
@@ -26,7 +34,15 @@
             <DatagridHeaderFilterString
                 OnChange="@(value => _filter.Email = value)"/>
         </DatagridHeaderCell>
-        <DatagridHeaderCell Text="Role" Separator="false"/>
+        <DatagridHeaderCell Separator="false">
+            <DatagridHeaderSort
+                Text="Role"
+                SortParam="@_sortParam"
+                SortAsc="@AppUserSort.RoleAsc"
+                SortDesc="@AppUserSort.RoleDesc"/>
+            <DatagridHeaderFilterString
+                OnChange="@(value => _filter.Role = value)"/>
+        </DatagridHeaderCell>
     </HeaderCells>
     <RowActionsTemplate/>
     <RowActionsTemplate>
