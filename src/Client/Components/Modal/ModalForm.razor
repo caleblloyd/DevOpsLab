@@ -1,3 +1,5 @@
+@using DevOpsLab.Client.Components.Alert
+
 <Modal @ref="_modal" Size="@Size">
     <Header>
         <button aria-label="Close" class="close" type="button" @onclick="CancelAsync">
@@ -6,6 +8,7 @@
         <h3 class="modal-title">@HeaderText</h3>
     </Header>
     <Body>
+    <AlertDanger Alerts="@_alerts"/>
     @ChildContent
     </Body>
     <Footer>
@@ -17,6 +20,8 @@
 @code {
 
     private Modal _modal;
+
+    private IEnumerable<string> _alerts;
 
     [Parameter]
     public virtual string CancelButtonClass { get; set; } = "btn-outline";
@@ -86,6 +91,7 @@
             await BeforeCancelAsync();
         }
         _modal.Close();
+        ClearAlerts();
         if (AfterCancel != default)
         {
             AfterCancel();
@@ -119,6 +125,7 @@
 
     public async Task SubmitAsync()
     {
+        ClearAlerts();
         if (BeforeSubmit != default)
         {
             BeforeSubmit();
@@ -136,6 +143,19 @@
         {
             await AfterSubmitAsync();
         }
+    }
+
+    public void SetAlerts(IEnumerable<string> alerts)
+    {
+        _alerts = alerts;
+        StateHasChanged();
+    }
+
+    public void ClearAlerts()
+    {
+        if (_alerts == null) return;
+        _alerts = null;
+        StateHasChanged();
     }
 
 }

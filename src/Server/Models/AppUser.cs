@@ -47,6 +47,7 @@ namespace DevOpsLab.Server.Models
             {
                 return _viewModel ??= new AppUserVM
                 {
+                    Id = Id,
                     Name = Name,
                     Email = UserName,
                     Role = Role,

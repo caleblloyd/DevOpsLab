@@ -1,0 +1,27 @@
+@if (Alerts != null && Alerts.Any())
+{
+    <clr-alert clralerttype="danger">
+        <div class="alert alert-danger">
+            <div class="alert-items">
+                @foreach (var alert in Alerts)
+                {
+                    <clr-alert-item class="alert-item">
+                        <div class="alert-icon-wrapper">
+                            <clr-icon class="alert-icon" shape="exclamation-circle"/>
+                        </div>
+                        <span class="alert-text">
+                            @alert
+                        </span>
+                    </clr-alert-item>
+                }
+            </div>
+        </div>
+    </clr-alert>
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<string> Alerts { get; set; }
+
+}

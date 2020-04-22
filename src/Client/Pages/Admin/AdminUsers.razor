@@ -3,6 +3,7 @@
 @using DevOpsLab.Client.Components
 @using DevOpsLab.Client.Components.Datagrid
 @using DevOpsLab.Client.Components.Modal
+@using DevOpsLab.Client.Helpers
 @using DevOpsLab.Shared.Collections
 @using DevOpsLab.Shared.Filter
 @using DevOpsLab.Shared.Sort
@@ -40,11 +41,11 @@
 </Datagrid>
 
 <ModalForm
-    @ref="_modalAddEdit"
-     HeaderText="@(_add ? "Add User" : "Edit User")"
+    @ref="_modalEdit"
+     HeaderText="Edit User"
      Size="@ModalSize.Large"
      AfterCancel="@AfterCancel"
-     BeforeSubmitAsync="@(() => _add ? AddAsync() : EditAsync())"
+     BeforeSubmitAsync="@EditAsync"
      AfterSubmitAsync="@AfterSubmitAsync">
     <p>Form</p>
 </ModalForm>
@@ -61,13 +62,11 @@
 </ModalForm>
 
 @code{
-    private bool _add;
-
     private AppUserVM _activeModel;
 
     private Datagrid<AppUserVM> _datagrid;
 
-    private ModalForm _modalAddEdit;
+    private ModalForm _modalEdit;
 
     private ModalForm _modalDelete;
 
@@ -92,30 +91,21 @@
         return listResponse;
     }
 
-    private async Task AddOpenAsync()
-    {
-        _add = true;
-        _activeModel = new AppUserVM();
-        await _modalAddEdit.OpenAsync();
-    }
-
-    private Task AddAsync()
-    {
-        Console.WriteLine("add");
-        return Task.CompletedTask;
-    }
-
     private async Task EditOpenAsync(AppUserVM context)
     {
-        _add = false;
         _activeModel = context;
-        await _modalAddEdit.OpenAsync();
+        await _modalEdit.OpenAsync();
     }
 
-    private Task EditAsync()
+    private async Task EditAsync()
     {
-        Console.WriteLine($"edit {_activeModel.Email}");
-        return Task.CompletedTask;
+        await foreach (var _ in AdminHubClient.HubConnection
+            .StreamAsync<bool>(
+                "UserEdit",
+                _activeModel
+            ))
+        {
+        }
     }
 
     private async Task DeleteOpenAsync(AppUserVM context)
@@ -124,10 +114,20 @@
         await _modalDelete.OpenAsync();
     }
 
-    private Task DeleteAsync()
+    private async Task DeleteAsync()
     {
-        Console.WriteLine($"delete {_activeModel.Email}");
-        return Task.CompletedTask;
+        await HubHelper.WrapAsync(
+            message => _modalDelete.SetAlerts(new[] {message}),
+            async () =>
+            {
+                await foreach (var _ in AdminHubClient.HubConnection
+                    .StreamAsync<bool>(
+                        "UserDelete",
+                        _activeModel
+                    ))
+                {
+                }
+            });
     }
 
     private void AfterCancel()
@@ -143,7 +143,6 @@
 
     private void ResetDefaults()
     {
-        _add = false;
         _activeModel = default;
     }
 
