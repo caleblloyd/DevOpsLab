@@ -32,7 +32,7 @@
 @code {
 
     [Parameter]
-    public StringParam StringParam { get; set; }
+    public WrapParam<string> StringParam { get; set; }
 
     public readonly string Id = ElementHelper.NewId();
 

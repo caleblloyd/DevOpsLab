@@ -1,6 +1,6 @@
 @using DevOpsLab.Client.Components.Alert
 
-<Modal @ref="_modal" Size="@Size">
+<Modal @ref="_modal" Size="@Size" EditFormModelFn="@EditFormModelFn" EditFormValidSubmitAsync="@SubmitAsync">
     <Header>
         <button aria-label="Close" class="close" type="button" @onclick="CancelAsync">
             <clr-icon aria-hidden="true" shape="close"/>
@@ -9,11 +9,23 @@
     </Header>
     <Body>
     <AlertDanger Alerts="@_alerts"/>
+    @if (EditFormModelFn() != default)
+    {
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+    }
     @ChildContent
     </Body>
     <Footer>
         <button class="btn @CancelButtonClass" type="button" @onclick="CancelAsync">@CancelButtonText</button>
-        <button class="btn @SubmitButtonClass" type="button" @onclick="SubmitAsync">@SubmitButtonText</button>
+        @if (EditFormModelFn() != default)
+        {
+            <button class="btn @SubmitButtonClass" type="submit" form="modal-form">@SubmitButtonText</button>
+        }
+        else
+        {
+            <button class="btn @SubmitButtonClass" type="button" @onclick="SubmitAsync">@SubmitButtonText</button>
+        }
     </Footer>
 </Modal>
 
@@ -40,6 +52,9 @@
 
     [Parameter]
     public ModalSize Size { get; set; }
+
+    [Parameter]
+    public Func<object> EditFormModelFn { get; set; } = () => null;
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }

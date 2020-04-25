@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using DevOpsLab.Server.Helpers.Data;
@@ -52,11 +53,13 @@ namespace DevOpsLab.Server.Hubs.Admin
         {
             yield return await HubHelper.WrapAsync(_logger, async () =>
             {
-                var user = await _db.Users.FirstOrDefaultAsync(m => m.Id == appUserVM.Id);
+                var user = await _userManager.FindByIdAsync(appUserVM.Id);
                 if (user == default)
                 {
                     throw new HubException("User does not exist");
                 }
+
+                HubHelper.Validate(appUserVM);
 
                 var nameClaim = (await _userManager.GetClaimsAsync(user))
                     .FirstOrDefault(m => m.Type == JwtClaimTypes.Name);
@@ -82,7 +85,7 @@ namespace DevOpsLab.Server.Hubs.Admin
         {
             yield return await HubHelper.WrapAsync(_logger, async () =>
             {
-                var user = await _db.Users.FirstOrDefaultAsync(m => m.Id == appUserVM.Id);
+                var user = await _userManager.FindByIdAsync(appUserVM.Id);
                 if (user == default)
                 {
                     throw new HubException("User does not exist");

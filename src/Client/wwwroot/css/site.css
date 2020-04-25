@@ -18,3 +18,11 @@ textarea {
 .md-textarea {
   height: 200px;
 }
+
+.clr-input.invalid {
+  border-bottom-color: #db2100;
+}
+
+.validation-errors {
+  color: #db2100;
+}

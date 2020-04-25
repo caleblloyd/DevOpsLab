@@ -44,10 +44,18 @@
     @ref="_modalEdit"
      HeaderText="Edit User"
      Size="@ModalSize.Large"
+     EditFormModelFn="@(() => (object) _activeModel)"
      AfterCancel="@AfterCancel"
      BeforeSubmitAsync="@EditAsync"
      AfterSubmitAsync="@AfterSubmitAsync">
-    <p>Form</p>
+    <div class="clr-form-control">
+        <label for="name" class="clr-control-label">Name</label>
+        <div class="clr-control-container">
+            <div class="clr-input-wrapper">
+                <InputText id="name" placeholder="Name" class="clr-input" @bind-Value="_activeModel.Name"/>
+            </div>
+        </div>
+    </div>
 </ModalForm>
 
 <ModalForm
@@ -72,7 +80,7 @@
 
     private readonly AppUserFilter _filter = new AppUserFilter();
 
-    private readonly SortParam<AppUserSort> _sortParam = new SortParam<AppUserSort>();
+    private readonly WrapParam<AppUserSort> _sortParam = new WrapParam<AppUserSort>();
 
     private async Task<ListResponse<AppUserVM>> FetchAsync(Paginate paginate)
     {
@@ -93,24 +101,29 @@
 
     private async Task EditOpenAsync(AppUserVM context)
     {
-        _activeModel = context;
+        _activeModel = DataHelper.DeepCopy(context);
         await _modalEdit.OpenAsync();
     }
 
     private async Task EditAsync()
     {
-        await foreach (var _ in AdminHubClient.HubConnection
-            .StreamAsync<bool>(
-                "UserEdit",
-                _activeModel
-            ))
-        {
-        }
+        await HubHelper.WrapAsync(
+            message => _modalEdit.SetAlerts(new[] {message}),
+            async () =>
+            {
+                await foreach (var _ in AdminHubClient.HubConnection
+                    .StreamAsync<bool>(
+                        "UserEdit",
+                        _activeModel
+                    ))
+                {
+                }
+            });
     }
 
     private async Task DeleteOpenAsync(AppUserVM context)
     {
-        _activeModel = context;
+        _activeModel = DataHelper.DeepCopy(context);
         await _modalDelete.OpenAsync();
     }
 
