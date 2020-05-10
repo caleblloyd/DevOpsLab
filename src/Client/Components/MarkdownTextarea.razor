@@ -23,10 +23,10 @@
     </li>
 </ul>
 <section role="tabpanel" aria-labelledby="@Id-edit-button" aria-hidden="@(!Edit ? "true" : "false")">
-    <textarea class="md-textarea" @bind="StringParam.Value"></textarea>
+    <textarea class="md-textarea" @bind="StringParam.Value" style="width: 100%"></textarea>
 </section>
 <section role="tabpanel" aria-labelledby="@Id-preview-button" aria-hidden="@(!Preview ? "true" : "false")">
-    @((MarkupString) HtmlHelper.MarkdownToHtml(StringParam.Value))
+    @((MarkupString) HtmlHelper.MarkdownToHtml(StringParam.Value ?? ""))
 </section>
 
 @code {

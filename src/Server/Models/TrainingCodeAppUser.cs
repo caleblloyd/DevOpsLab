@@ -55,6 +55,28 @@ namespace DevOpsLab.Server.Models
 
         public bool Active { get; set; } = true;
 
-        public DateTimeOffset? Expires { get; set; }
+        [NotMapped]
+        public DateTime? Expires
+        {
+            get
+            {
+                if (TrainingCode == default)
+                {
+                    return default;
+                }
+
+                if (TrainingCode.ExpiresDate.HasValue)
+                {
+                    return TrainingCode.ExpiresDate.Value;
+                }
+
+                if (TrainingCode.ExpiresAfter.HasValue)
+                {
+                    return Created + TrainingCode.ExpiresAfter.Value;
+                }
+
+                return default;
+            }
+        }
     }
 }

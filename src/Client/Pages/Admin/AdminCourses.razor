@@ -1,9 +1,204 @@
 ﻿@page "/admin/courses"
 
 @using DevOpsLab.Client.Components
+@using DevOpsLab.Client.Components.Datagrid
+@using DevOpsLab.Client.Components.Modal
+@using DevOpsLab.Client.Helpers
+@using DevOpsLab.Shared.Collections
+@using DevOpsLab.Shared.Filter
+@using DevOpsLab.Shared.Sort
+@using DevOpsLab.Shared.ViewModels
+@using Microsoft.AspNetCore.SignalR.Client
 
 @inherits AdminBase
 
 <h1>Courses</h1>
 
-<MarkdownTextarea StringParam="@(new WrapParam<string>("asdf"))"/>
+<button class="btn btn-primary" type="button" @onclick="AddOpenAsync">Add</button>
+
+<Datagrid @ref="_datagrid" FetchAsync="@FetchAsync" Paginate="true">
+    <HeaderCells>
+        <DatagridHeaderCell>
+            <DatagridHeaderSort
+                Text="Name"
+                SortParam="@_sortParam"
+                SortAsc="@CourseSort.NameAsc"
+                SortDesc="@CourseSort.NameDesc"/>
+            <DatagridHeaderFilterString
+                OnChange="@(value => _filter.Name = value)"/>
+        </DatagridHeaderCell>
+    </HeaderCells>
+    <RowActionsTemplate/>
+    <RowActionsTemplate>
+        <DropdownLink ActionAsync="@(() => EditOpenAsync(context))">Edit</DropdownLink>
+        <DropdownLink ActionAsync="@(() => DeleteOpenAsync(context))">Delete</DropdownLink>
+    </RowActionsTemplate>
+    <RowCellsTemplate>
+        <DatagridCell>@context.Name</DatagridCell>
+    </RowCellsTemplate>
+</Datagrid>
+
+<ModalForm
+    @ref="_modalAddEdit"
+     HeaderText="@(_add ? "Add Course" : "Edit Course")"
+     Size="@ModalSize.Large"
+     StyleHeight="height: 55vh"
+     EditFormModelFn="@(() => (object) _activeModel)"
+     AfterCancel="@AfterCancel"
+     BeforeSubmitAsync="@(() => _add ? AddAsync() : EditAsync())"
+     AfterSubmitAsync="@AfterSubmitAsync">
+    <div class="clr-form-control">
+        <label for="name" class="clr-control-label">Name</label>
+        <div class="clr-control-container">
+            <div class="clr-input-wrapper">
+                <InputText id="name" placeholder="Name" class="clr-input" @bind-Value="_activeModel.Name"/>
+            </div>
+        </div>
+    </div>
+    <div class="clr-form-control">
+        <label class="clr-control-label">Description</label>
+        <div class="clr-control-container full-width">
+            <div class="clr-input-wrapper">
+                <MarkdownTextarea StringParam="@_description"/>
+            </div>
+        </div>
+    </div>
+</ModalForm>
+
+<ModalForm
+    @ref="_modalDelete"
+     HeaderText="Delete Course"
+     SubmitButtonClass="btn-danger"
+     SubmitButtonText="Delete"
+     AfterCancel="@AfterCancel"
+     BeforeSubmitAsync="@DeleteAsync"
+     AfterSubmitAsync="@AfterSubmitAsync">
+    <p>Delete course <strong>@_activeModel.Name</strong>?</p>
+</ModalForm>
+
+@code{
+    private CourseVM _activeModel;
+
+    private bool _add = false;
+
+    private WrapParam<string> _description;
+
+    private Datagrid<CourseVM> _datagrid;
+
+    private ModalForm _modalAddEdit;
+
+    private ModalForm _modalDelete;
+
+    private readonly CourseFilter _filter = new CourseFilter();
+
+    private readonly WrapParam<CourseSort> _sortParam = new WrapParam<CourseSort>();
+
+    public AdminCourses()
+    {
+        _description = new WrapParam<string>(
+            () => _activeModel.Description,
+            value => _activeModel.Description = value);
+    }
+
+    private async Task<ListResponse<CourseVM>> FetchAsync(Paginate paginate)
+    {
+        await AdminHubClient.WaitConnectedAsync();
+        ListResponse<CourseVM> listResponse = null;
+        await foreach (var response in AdminHubClient.HubConnection
+            .StreamAsync<ListResponse<CourseVM>>(
+                "CourseList",
+                _filter,
+                _sortParam.Value,
+                paginate
+            ))
+        {
+            listResponse = response;
+        }
+        return listResponse;
+    }
+
+    private async Task AddOpenAsync()
+    {
+        _add = true;
+        _activeModel = new CourseVM();
+        await _modalAddEdit.OpenAsync();
+    }
+
+    private async Task AddAsync()
+    {
+        await HubHelper.WrapAsync(
+            message => _modalAddEdit.SetAlerts(new[] {message}),
+            async () =>
+            {
+                await foreach (var _ in AdminHubClient.HubConnection
+                    .StreamAsync<bool>(
+                        "CourseAdd",
+                        _activeModel
+                    ))
+                {
+                }
+            });
+    }
+
+    private async Task EditOpenAsync(CourseVM context)
+    {
+        _add = false;
+        _activeModel = DataHelper.DeepCopy(context);
+        await _modalAddEdit.OpenAsync();
+    }
+
+    private async Task EditAsync()
+    {
+        await HubHelper.WrapAsync(
+            message => _modalAddEdit.SetAlerts(new[] {message}),
+            async () =>
+            {
+                await foreach (var _ in AdminHubClient.HubConnection
+                    .StreamAsync<bool>(
+                        "CourseEdit",
+                        _activeModel
+                    ))
+                {
+                }
+            });
+    }
+
+    private async Task DeleteOpenAsync(CourseVM context)
+    {
+        _activeModel = DataHelper.DeepCopy(context);
+        await _modalDelete.OpenAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        await HubHelper.WrapAsync(
+            message => _modalDelete.SetAlerts(new[] {message}),
+            async () =>
+            {
+                await foreach (var _ in AdminHubClient.HubConnection
+                    .StreamAsync<bool>(
+                        "CourseDelete",
+                        _activeModel
+                    ))
+                {
+                }
+            });
+    }
+
+    private void AfterCancel()
+    {
+        ResetDefaults();
+    }
+
+    private async Task AfterSubmitAsync()
+    {
+        ResetDefaults();
+        await _datagrid.Refresh();
+    }
+
+    private void ResetDefaults()
+    {
+        _activeModel = default;
+    }
+
+}

@@ -17,6 +17,7 @@ textarea {
 
 .md-textarea {
   height: 200px;
+  width: 100%;
 }
 
 .clr-input.invalid {
@@ -25,4 +26,8 @@ textarea {
 
 .validation-errors {
   color: #db2100;
+}
+
+.full-width {
+  width: 100%;
 }

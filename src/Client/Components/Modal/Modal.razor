@@ -6,7 +6,7 @@
                 <div class="modal-header">
                     @Header
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="@StyleHeight">
                     <ModalEditFormContainer ModelFn="@EditFormModelFn" ValidSubmitAsync="@EditFormValidSubmitAsync">
                         @Body
                     </ModalEditFormContainer>
@@ -35,6 +35,9 @@
 
     [Parameter]
     public ModalSize Size { get; set; }
+    
+    [Parameter]
+    public string StyleHeight { get; set; }
 
     [Parameter]
     public Func<object> EditFormModelFn { get; set; } = () => null;

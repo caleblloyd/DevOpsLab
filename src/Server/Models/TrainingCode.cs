@@ -49,7 +49,6 @@ namespace DevOpsLab.Server.Models
                     Tracks = TrainingCodeTracks.Select(m => m.Track.ViewModel)
                 };
             }
-            
         }
 
         [Required] public string Code { get; set; }
@@ -57,6 +56,8 @@ namespace DevOpsLab.Server.Models
         public int MaxUsers { get; set; }
 
         public TimeSpan? ExpiresAfter { get; set; }
+
+        public DateTime? ExpiresDate { get; set; }
 
         public virtual List<TrainingCodeAppUser> TrainingCodeAppUsers { get; set; } =
             new List<TrainingCodeAppUser>();
