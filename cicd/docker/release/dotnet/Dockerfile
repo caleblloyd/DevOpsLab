@@ -4,7 +4,7 @@ FROM boxops/dashboard-sdk:${GIT_COMMIT_SHORT_HASH} AS sdk
 RUN cd /dotnet/src/BoxOps.Dashboard \
     && dotnet publish -o app
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.1
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.4
 
 # add docker user, group, and setup directories
 RUN addgroup --gid 1000 docker && \

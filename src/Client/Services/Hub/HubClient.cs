@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using DevOpsLab.Client.Helpers;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -12,15 +9,8 @@ namespace DevOpsLab.Client.Services.Hub
 {
     public abstract class HubClient
     {
-        public HubConnection HubConnection;
+        public readonly HubConnection HubConnection;
         protected readonly NavigationManager NavigationManager;
-
-        // workaround https://github.com/dotnet/aspnetcore/pull/20466
-        private readonly IAccessTokenProvider _accessTokenProvider;
-        private readonly SemaphoreSlim _hubConnectionWorkaroundSemaphoreSlim = new SemaphoreSlim(1);
-
-        private HubConnection _hubConnectionWorkaround;
-        // end workaround
 
         private bool _connected;
         private readonly SemaphoreSlim _connectedSemaphoreSlim = new SemaphoreSlim(1);
@@ -30,9 +20,6 @@ namespace DevOpsLab.Client.Services.Hub
 
         protected HubClient(IAccessTokenProvider accessTokenProvider, NavigationManager navigationManager)
         {
-            // workaround https://github.com/dotnet/aspnetcore/pull/20466
-            _accessTokenProvider = accessTokenProvider;
-            // end workaround
             NavigationManager = navigationManager;
             HubConnection = new HubConnectionBuilder()
                 // ReSharper disable once VirtualMemberCallInConstructor
@@ -64,45 +51,6 @@ namespace DevOpsLab.Client.Services.Hub
 
         private async Task LocationChanged()
         {
-            // workaround https://github.com/dotnet/aspnetcore/pull/20466
-            if (_hubConnectionWorkaround == null)
-            {
-                await _hubConnectionWorkaroundSemaphoreSlim.WaitAsync();
-                try
-                {
-                    if (_hubConnectionWorkaround == null)
-                    {
-                        string tokenValue;
-                        var tokenResult = await _accessTokenProvider.RequestAccessToken();
-                        // got a token
-                        if (tokenResult.TryGetToken(out var token))
-                        {
-                            tokenValue = token.Value;
-                        }
-                        else
-                        {
-                            NavigationManager.NavigateTo(tokenResult.RedirectUrl);
-                            return;
-                        }
-
-                        var accessTokenEncoded = UrlEncoder.Default.Encode(tokenValue);
-                        var url = NavigationManager.ToAbsoluteUri(Endpoint) + "?access_token=" + accessTokenEncoded;
-                        _hubConnectionWorkaround = new HubConnectionBuilder()
-                            // ReSharper disable once VirtualMemberCallInConstructor
-                            .WithUrl(url,
-                                options => { options.AccessTokenProvider = () => Task.FromResult(tokenValue); })
-                            .WithAutomaticReconnect()
-                            .Build();
-                        HubConnection = _hubConnectionWorkaround;
-                    }
-                }
-                finally
-                {
-                    _hubConnectionWorkaroundSemaphoreSlim.Release();
-                }
-            }
-            // end workaround
-
             // set latest value of _shouldConnect
             lock (_shouldConnectLock)
             {

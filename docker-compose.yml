@@ -37,7 +37,7 @@ services:
     ports:
       - "16300:5000"
     volumes:
-      - /DevOpsLab.sln:/dotnet/DevOpsLab.sln
+      - ./DevOpsLab.sln:/dotnet/DevOpsLab.sln
       - ./.config:/dotnet/.config
       - ./src:/dotnet/src
       - bin-cache:/dotnet/.bin
