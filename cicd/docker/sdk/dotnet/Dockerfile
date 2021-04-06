@@ -6,7 +6,7 @@ RUN mkdir /csproj \
         \( -iname "*.csproj" -o -iname "*.sln" -o -iname "nuget.config" \) \
         -exec cp --parents {} /csproj \;
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.202
+FROM mcr.microsoft.com/dotnet/sdk:5.0.103
 
 # add docker user and setup folders
 RUN addgroup --gid 1000 docker && \
@@ -26,5 +26,5 @@ RUN cd /dotnet \
     && dotnet build -c Debug
 
 # set workdir and command
-WORKDIR /dotnet/src/BoxOps.Dashboard
+WORKDIR /dotnet/src/DevOpsLab
 CMD ["dotnet", "run", "-c", "Debug"]

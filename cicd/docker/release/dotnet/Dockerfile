@@ -1,10 +1,10 @@
 ARG GIT_COMMIT_SHORT_HASH
-FROM boxops/dashboard-sdk:${GIT_COMMIT_SHORT_HASH} AS sdk
+FROM dol-sdk:${GIT_COMMIT_SHORT_HASH} AS sdk
 
-RUN cd /dotnet/src/BoxOps.Dashboard \
+RUN cd /dotnet/src/DevOpsLab \
     && dotnet publish -o app
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.4
+FROM mcr.microsoft.com/dotnet/aspnet:5.0.3
 
 # add docker user, group, and setup directories
 RUN addgroup --gid 1000 docker && \
@@ -14,8 +14,8 @@ RUN addgroup --gid 1000 docker && \
 USER docker:docker
 
 # copy application
-COPY --from=sdk --chown=docker:docker /dotnet/src/BoxOps.Dashboard/app /app
+COPY --from=sdk --chown=docker:docker /dotnet/src/DevOpsLab/app /app
 
 # set workdir and command
 WORKDIR /app
-CMD ["./BoxOps.Dashboard"]
+CMD ["./DevOpsLab"]
