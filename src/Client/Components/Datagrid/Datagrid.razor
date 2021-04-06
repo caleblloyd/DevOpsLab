@@ -10,10 +10,13 @@
                     <div class="datagrid">
                         <div class="datagrid-table-wrapper">
                             <div role="grid" class="datagrid-table">
-                                <DatagridHeaderRow HasActions="@(RowActionsTemplate != default)">
+                                <DatagridHeaderRow
+                                    ActionsAuthTemplate="@ActionsAuthTemplate"
+                                    HasActions="@(RowActionsTemplate != default)">
                                     @HeaderCells
                                 </DatagridHeaderRow>
-                                @if (_listResponse == null)
+
+                                @if (Loading || _listResponse == null)
                                 {
                                     <DatagridRow>
                                         <Cells>
@@ -39,10 +42,10 @@
                                     {
                                         if (RowActionsTemplate != default)
                                         {
-                                            <DatagridRow>
-                                                <Actions>
-                                                    @RowActionsTemplate(item)
-                                                </Actions>
+                                            var actions = RowActionsTemplate?.Invoke(item);
+                                            <DatagridRow
+                                                Actions="@actions"
+                                                ActionsAuthTemplate="@ActionsAuthTemplate">
                                                 <Cells>
                                                     @RowCellsTemplate(item)
                                                 </Cells>
@@ -86,6 +89,9 @@
     private Paginate _paginate;
 
     [Parameter]
+    public RenderFragment<RenderFragment> ActionsAuthTemplate { get; set; } = fragment => fragment;
+
+    [Parameter]
     public Func<Paginate, Task<ListResponse<TItem>>> FetchAsync { get; set; }
 
     [Parameter]
@@ -98,19 +104,22 @@
     public RenderFragment<TItem> RowCellsTemplate { get; set; }
 
     [Parameter]
-    public bool Paginate { get; set; } = false;
+    public bool Paginate { get; set; }
 
     [Parameter]
     public string StyleHeight { get; set; } = "min-height: 240px";
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _paginate = new Paginate();
-        if (Paginate)
+        if (firstRender)
         {
-            _paginate.Limit = 10;
+            _paginate = new Paginate();
+            if (Paginate)
+            {
+                _paginate.Limit = 10;
+            }
+            await Refresh();
         }
-        await Refresh();
     }
 
     public async Task Refresh()

@@ -1,15 +1,10 @@
-@{
-    if (ModelFn() != default)
-    {
-        <EditForm id="modal-form" class="clr-form clr-form-horizontal" Model="ModelFn()" OnValidSubmit="@ValidSubmitAsync">
-            @ChildContent
-        </EditForm>
-    }
-    else
-    {
-        @ChildContent
-    }
-}
+<EditForm
+    id="modal-form"
+    class="clr-form clr-form-horizontal"
+    Model="@ModelFn()"
+    OnValidSubmit="@ValidSubmitAsync">
+    @ChildContent
+</EditForm>
 
 @code
 {
@@ -17,7 +12,7 @@
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public Func<object> ModelFn  { get; set; } = () => null;
+    public Func<object> ModelFn { get; set; }
 
     [Parameter]
     public Func<Task> ValidSubmitAsync { get; set; }

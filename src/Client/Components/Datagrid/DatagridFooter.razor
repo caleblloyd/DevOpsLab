@@ -27,6 +27,14 @@
                 <button
                     type="button"
                     class="pagination-first"
+                    aria-label="Refresh"
+                    @onclick="@Refresh"
+                    disabled="@Loading">
+                    <clr-icon shape="refresh" role="none"/>
+                </button>
+                <button
+                    type="button"
+                    class="pagination-first"
                     aria-label="First Page"
                     @onclick="@(() => PageChangeNumber(1))"
                     disabled="@(Loading || Page == 1)">

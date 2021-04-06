@@ -5,4 +5,4 @@ services:
     build:
       context: ../../../
       dockerfile: cicd/docker/sdk/dotnet//Dockerfile
-    image: boxops/dashboard-sdk:${GIT_COMMIT_SHORT_HASH:-dev}
+    image: dol-sdk:${GIT_COMMIT_SHORT_HASH:-dev}
