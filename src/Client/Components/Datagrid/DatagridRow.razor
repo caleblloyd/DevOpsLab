@@ -2,15 +2,16 @@
     <div role="row" class="datagrid-row-master datagrid-row-flex">
         @if (Actions != default)
         {
-            <div class="datagrid-row-sticky">
-                <div role="gridcell" class="datagrid-row-actions datagrid-fixed-column datagrid-cell">
-                    <clr-dg-action-overflow>
-                        <DatagridRowActions>
-                            @Actions
-                        </DatagridRowActions>
-                    </clr-dg-action-overflow>
-                </div>
-            </div>
+            @ActionsAuthTemplate(
+                @<div class="datagrid-row-sticky">
+                    <div role="gridcell" class="datagrid-row-actions datagrid-fixed-column datagrid-cell">
+                        <clr-dg-action-overflow>
+                            <DatagridRowActions>
+                                @Actions
+                            </DatagridRowActions>
+                        </clr-dg-action-overflow>
+                    </div>
+                </div>)
         }
         <div class="datagrid-row-scrollable">
             <div class="datagrid-scrolling-cells">
@@ -24,6 +25,9 @@
 {
     [Parameter]
     public RenderFragment Actions { get; set; }
+
+    [Parameter]
+    public RenderFragment<RenderFragment> ActionsAuthTemplate { get; set; }
 
     [Parameter]
     public RenderFragment Cells { get; set; }

@@ -1,0 +1,101 @@
+<Modal @ref="_modal" Size="@Size">
+    <Header>
+        <button aria-label="Close" class="close" type="button" @onclick="CloseAsync">
+            <clr-icon aria-hidden="true" shape="close"/>
+        </button>
+        <h3 class="modal-title">@HeaderText</h3>
+    </Header>
+    <Body>
+    @ChildContent
+    </Body>
+    <Footer>
+        <button class="btn @CloseButtonClass" type="button" @onclick="CloseAsync">@CloseButtonText</button>
+    </Footer>
+</Modal>
+
+@code {
+
+    private Modal _modal;
+    
+    [Parameter]
+    public virtual string CloseButtonClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public virtual string CloseButtonText { get; set; } = "Close";
+
+    [Parameter]
+    public string HeaderText { get; set; }
+
+    [Parameter]
+    public ModalSize Size { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Action BeforeClose { get; set; }
+
+    [Parameter]
+    public Func<Task> BeforeCloseAsync { get; set; }
+
+    [Parameter]
+    public Action BeforeOpen { get; set; }
+
+    [Parameter]
+    public Func<Task> BeforeOpenAsync { get; set; }
+
+    [Parameter]
+    public Action AfterClose { get; set; }
+
+    [Parameter]
+    public Func<Task> AfterCloseAsync { get; set; }
+
+    [Parameter]
+    public Action AfterOpen { get; set; }
+
+    [Parameter]
+    public Func<Task> AfterOpenAsync { get; set; }
+
+    public async Task CloseAsync()
+    {
+        if (BeforeClose != default)
+        {
+            BeforeClose();
+        }
+        else if (BeforeCloseAsync != default)
+        {
+            await BeforeCloseAsync();
+        }
+        _modal.Close();
+        if (AfterClose != default)
+        {
+            AfterClose();
+        }
+        else if (AfterCloseAsync != default)
+        {
+            await AfterCloseAsync();
+        }
+    }
+
+    public async Task OpenAsync()
+    {
+        if (BeforeOpen != default)
+        {
+            BeforeOpen();
+        }
+        else if (BeforeOpenAsync != default)
+        {
+            await BeforeOpenAsync();
+        }
+        _modal.Open();
+        if (AfterOpen != default)
+        {
+            AfterOpen();
+        }
+        else if (AfterOpenAsync != default)
+        {
+            await AfterOpenAsync();
+        }
+    }
+
+}

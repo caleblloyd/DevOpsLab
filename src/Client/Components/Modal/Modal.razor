@@ -7,9 +7,16 @@
                     @Header
                 </div>
                 <div class="modal-body">
-                    <ModalEditFormContainer ModelFn="@EditFormModelFn" ValidSubmitAsync="@EditFormValidSubmitAsync">
+                    @if (EditFormModelFn() != default)
+                    {
+                        <ModalEditFormContainer ModelFn="@EditFormModelFn" ValidSubmitAsync="@EditFormValidSubmitAsync">
+                            @Body
+                        </ModalEditFormContainer>
+                    }
+                    else
+                    {
                         @Body
-                    </ModalEditFormContainer>
+                    }
                 </div>
                 <div class="modal-footer">
                     @Footer
@@ -40,7 +47,7 @@
     public Func<object> EditFormModelFn { get; set; } = () => null;
 
     [Parameter]
-    public Func<Task> EditFormValidSubmitAsync { get; set; }
+    public Func<Task> EditFormValidSubmitAsync { get; set; } = () => Task.CompletedTask;
 
     private string ClassSize
     {
